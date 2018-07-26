@@ -17,30 +17,33 @@ or consider including me (`S. Riggi, INAF - Osservatorio Astrofisico di Catania,
 as a co-author on your publications.
 
 ## **Status**
-This software is currently not actively maintained. Building with recent versions of GEANT4/ROOT/VTK/Qt may require fixing the Makefile.
+This software is currently not actively maintained. Building with recent versions of GEANT4/ROOT/VTK/Qt may require fixing the Makefile. The software was used with:
+* OS: Ubuntu 14.04/16.04, Centos 6
+* QT 4 (not tested with QT 5)
+* VTK 5 (not tested with VTK 6) 
+* ROOT 5, 6
+* GEANT 4.9.X
 
 ## **Installation**  
 
 ### **Prerequisites**
+Install the system libraries (example for Ubuntu):
+* libphonon-dev libphonon4 phonon-backend-gstreamer
+* libafterimage-dev
+
 Install the project mandatory dependencies:  
 * ROOT [https://root.cern.ch/]
 * GEANT4 [https://geant4.web.cern.ch/] 
-* cfitsio [https://heasarc.gsfc.nasa.gov/fitsio/fitsio.html], to be built with multithread support (e.g. give --enable-reentrant option in configure)
-* protobuf [https://github.com/google/protobuf]
-* jsoncpp [https://github.com/open-source-parsers/jsoncpp]
-* python (>=2.7) [https://www.python.org/], install also these additional modules: pyfits, astropy
-* cmake (>=2.8) [https://cmake.org]  
-  
-Optional dependencies are:
-* MPICH [https://www.mpich.org/], needed when the build option ENABLE_MPI=ON        
-* OpenMP [http://www.openmp.org/], needed when the build option BUILD_WITH_OPENMP=ON    
-* GoogleTest [https://github.com/google/googletest], needed for unit testing when the build option ENABLE_TEST=ON   
-* Doxygen [www.doxygen.org/], needed to generate the API documentation   
+* VTK library [https://www.vtk.org/], built with 
+* QT [https://www.qt.io], enable QVTKWidget build
+* QJson [https://github.com/flavio/qjson.git]    
+* MPI library: MPICH [https://www.mpich.org/] or OpenMPI [https://www.open-mpi.org/]
 
 Make sure you have set the following environment variables to the external library installation dirs 
-* ROOTSYS
-* OPENCV_DIR
-* R_DIR
+* ROOTSYS, set to ROOT installation prefix
+* G4INSTALL, set to GEANT4 installation prefix
+* G4LIB, set to GEANT4 installed library path
+* MPI_DIR, set to MPI installation prefix
 * BOOST_ROOT
 * LOG4CXX_ROOT
 * JSONCPP_ROOT
