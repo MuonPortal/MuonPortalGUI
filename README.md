@@ -43,14 +43,16 @@ Install the project mandatory dependencies:
 * log4cxx [https://logging.apache.org/log4cxx/]
 
 Make sure you have set the following environment variables to the external library installation dirs 
-* ROOTSYS, set to ROOT installation prefix
-* G4INSTALL, set to GEANT4 installation prefix
-* G4LIB, set to GEANT4 installed library path
-* MPI_DIR, set to MPI installation prefix
-* BOOST_ROOT, set to boost library installation prefix
-* LOG4CXX_DIR, set to log4cxx library installation prefix
-* QJSON_DIR, set to QJson installation prefix
-* 
+* ROOTSYS: set to ROOT installation prefix
+* G4INSTALL: set to GEANT4 installation prefix
+* G4LIB: set to GEANT4 installed library path
+* VTK_INCDIR: set to VTK header path
+* VTK_LIBDIR: set to VTK libray path
+* LIBAFTERIMAGE_INCDIR: set to libAfterImage header path
+* MPI_DIR: set to MPI installation prefix
+* BOOST_ROOT: set to boost library installation prefix
+* LOG4CXX_DIR: set to log4cxx library installation prefix
+* QJSON_DIR: set to QJson installation prefix
 
 NB: Modify Makefile CPPFLAGS and LDFLAGS in case the dependency tools cannot be found.
 
