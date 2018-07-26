@@ -1,5 +1,29 @@
+// ******************************************************************************
+// * License and Disclaimer                                                     *
+// *                                                                            *
+// * Copyright 2018 Simone Riggi																			          *
+// *																																	          *
+// * This file is part of MuonPortalGUI																          *
+// * MuonPortalGUI is free software: you can redistribute it and/or modify it   *
+// * under the terms of the GNU General Public License as published by          *
+// * the Free Software Foundation, either * version 3 of the License,           *
+// * or (at your option) any later version.                                     *
+// * MuonPortalGUI is distributed in the hope that it will be useful, but 			*
+// * WITHOUT ANY WARRANTY; without even the implied warranty of                 * 
+// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.                       *
+// * See the GNU General Public License for more details. You should            * 
+// * have received a copy of the GNU General Public License along with          * 
+// * MuonPortalGUI. If not, see http://www.gnu.org/licenses/.                   *
+// ******************************************************************************
 
-
+/**
+* @file G4DetectorGeometry.cc
+* @class G4DetectorGeometry
+* @brief GEANT4 detector geometry definition
+*
+* @author S. Riggi
+* @date 21/02/2012
+*/
 #include <G4DetectorGeometry.h>
 #include <ConfigParser.h>
 
@@ -41,6 +65,7 @@
 
 using namespace std;
 
+namespace MuonPortalNS {
 
 G4DetectorGeometry::G4DetectorGeometry(){
 
@@ -331,4 +356,4 @@ void G4DetectorGeometry::UpdateGeometry(){
 }//close G4DetectorGeometry::UpdateGeometry()
 
 
-
+}//close namespace

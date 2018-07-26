@@ -1,11 +1,24 @@
+// ******************************************************************************
+// * License and Disclaimer                                                     *
+// *                                                                            *
+// * Copyright 2018 Simone Riggi																			          *
+// *																																	          *
+// * This file is part of MuonPortalGUI																          *
+// * MuonPortalGUI is free software: you can redistribute it and/or modify it   *
+// * under the terms of the GNU General Public License as published by          *
+// * the Free Software Foundation, either * version 3 of the License,           *
+// * or (at your option) any later version.                                     *
+// * MuonPortalGUI is distributed in the hope that it will be useful, but 			*
+// * WITHOUT ANY WARRANTY; without even the implied warranty of                 * 
+// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.                       *
+// * See the GNU General Public License for more details. You should            * 
+// * have received a copy of the GNU General Public License along with          * 
+// * MuonPortalGUI. If not, see http://www.gnu.org/licenses/.                   *
+// ******************************************************************************
 /**
 * @file MPToolkit.cc
 * @class MPToolkit
-* @brief main class used to handle the entire project
-*
-* The simulation can run either in a batch mode or in interactive mode using visualization of detectors, tracks, etc...
-* To select the run mode, just give in the command line the arguments "--batch" or "--interactive". The program will look for the "batchConfigFile.mac" or "interactiveConfigFile.mac" config files in the config_macros/ directory.
-* As example, one can also handle a simulation output, for example giving as argument "--process".
+* @brief GUI launcher main
 * @author S. Riggi
 * @date 05/04/2010
 */
@@ -16,7 +29,7 @@
 
 #include <VolumeRenderingViewer.h>
 
-
+//## C++ headers
 #include <iostream>
 #include <vector>
 #include <unistd.h>

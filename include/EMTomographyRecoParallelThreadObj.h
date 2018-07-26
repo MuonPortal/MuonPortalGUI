@@ -1,25 +1,38 @@
+// ******************************************************************************
+// * License and Disclaimer                                                     *
+// *                                                                            *
+// * Copyright 2018 Simone Riggi																			          *
+// *																																	          *
+// * This file is part of MuonPortalGUI																          *
+// * MuonPortalGUI is free software: you can redistribute it and/or modify it   *
+// * under the terms of the GNU General Public License as published by          *
+// * the Free Software Foundation, either * version 3 of the License,           *
+// * or (at your option) any later version.                                     *
+// * MuonPortalGUI is distributed in the hope that it will be useful, but 			*
+// * WITHOUT ANY WARRANTY; without even the implied warranty of                 * 
+// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.                       *
+// * See the GNU General Public License for more details. You should            * 
+// * have received a copy of the GNU General Public License along with          * 
+// * MuonPortalGUI. If not, see http://www.gnu.org/licenses/.                   *
+// ******************************************************************************
 
 /**
 * @file EMTomographyRecoParallelThreadObj.h
 * @class EMTomographyRecoParallelThreadObj
-* @brief Reconstruct the tomographic image with likelihood method
+* @brief Reconstruct the tomographic image with likelihood method (parallel version)
 *
 * @author S. Riggi
 * @date 21/02/2012
 */
 
-
-
 #ifndef EMTOMOGRAPHYRECO_PARALLELTHREAD_OBJ_H
 #define EMTOMOGRAPHYRECO_PARALLELTHREAD_OBJ_H
 
 #include <TASImageNew.h>
-//#include <MyTASImage.h>
 
 #include <mpi.h>
+
 #include <QObject>
-
-
 
 #include <VoxelData.h>
 #include <MuonEventData.h>
@@ -57,8 +70,6 @@
 #include <sstream>
 #include <fstream>
 
-
-
 #include <QDialog>
 #include <QUrl>
 #include <QByteArray>
@@ -93,7 +104,7 @@ class QThread;
 class QStatusBar;
 class QSpacerItem;
 
-using namespace std;
+namespace MuonPortalNS {
 
 
 class EMTomographyRecoParallelThreadObj : public QObject {
@@ -692,7 +703,6 @@ class EMTomographyRecoParallelThreadObj : public QObject {
 		TStyle* myStyle;
 		
 		static const int MAXRENDIMG= 1000;
-		//MyTASImage* VolRendImg[MAXRENDIMG];
 		TASImageNew* VolRendImg[MAXRENDIMG];
 		TImagePalette* fTemperaturePalette;
 
@@ -704,8 +714,9 @@ class EMTomographyRecoParallelThreadObj : public QObject {
 		int mapEventsAfter;
 		int* mapEvents;
 
-};
+};//close class
 
+}//close namespace
 
 #endif 
 

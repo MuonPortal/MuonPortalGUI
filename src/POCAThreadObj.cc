@@ -1,7 +1,34 @@
+// ******************************************************************************
+// * License and Disclaimer                                                     *
+// *                                                                            *
+// * Copyright 2018 Simone Riggi																			          *
+// *																																	          *
+// * This file is part of MuonPortalGUI																          *
+// * MuonPortalGUI is free software: you can redistribute it and/or modify it   *
+// * under the terms of the GNU General Public License as published by          *
+// * the Free Software Foundation, either * version 3 of the License,           *
+// * or (at your option) any later version.                                     *
+// * MuonPortalGUI is distributed in the hope that it will be useful, but 			*
+// * WITHOUT ANY WARRANTY; without even the implied warranty of                 * 
+// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.                       *
+// * See the GNU General Public License for more details. You should            * 
+// * have received a copy of the GNU General Public License along with          * 
+// * MuonPortalGUI. If not, see http://www.gnu.org/licenses/.                   *
+// ******************************************************************************
+/**
+* @file POCAThreadObj.cc
+* @class POCAThreadObj
+* @brief POCA algorithm processing thread
+* 
+* @author S. Riggi
+* @date 25/04/2010
+*/
 #include <POCAThreadObj.h>
+#include <Logger.h>
 #include <ConfigParser.h>
 #include <AnalysisConsts.h>
 #include <Gui.h>
+#include <TASImageNew.h>
 
 #include <QtGui>
 #include <QString>
@@ -60,6 +87,7 @@
 
 using namespace std;
 
+namespace MuonPortalNS {
 
 POCAThreadObj::POCAThreadObj(){
 
@@ -309,9 +337,11 @@ bool POCAThreadObj::Init(){
 }//close POCAThreadObj::Init()
 
 
-bool POCAThreadObj::ReadData(){
-	
-	QString msg = QString("POCAThreadObj::ReadData(): INFO: Start reading data...");
+bool POCAThreadObj::ReadData()
+{
+	std::string infoMsg("Start reading data ...");	
+	INFO_LOG(infoMsg);
+	QString msg = QString(infoMsg.c_str());
 	emit(statusMessage(msg));
 
 	fLogMessage.status= eRunning;
@@ -351,7 +381,9 @@ bool POCAThreadObj::ReadData(){
 			line >> EventId >> xHit[0] >> yHit[0] >> xHit[1] >> yHit[1] >> xHit[2] >> yHit[2] >> xHit[3] >> yHit[3] >> p;
 		}
 		else{
-			QString errmsg = QString("POCAThreadObj::ReadData(): ERROR: Troubles in input file reading (strange characters?)...");
+			std::string errMsg("Troubles in input file reading (strange characters?)!");
+			WARN_LOG(errMsg);
+			QString errmsg = QString(errMsg.c_str());
 			emit(statusMessage(errmsg));
 			emit error();
 
@@ -380,7 +412,7 @@ bool POCAThreadObj::ReadData(){
 
 			emit(statusProgress( (int)(thisReadProgressStatus) ));
 			
-			cout<<"POCA Image Reco: INFO: event="<<j<<" fNEvents="<<fNEvents<<"  fNReadEvents="<<fNReadEvents<<"  thisProgressPercentage="<<thisProgressPercentage<<"  (int)(progressPercentage+thisProgressPercentage)="<<(int)(progressPercentage+thisProgressPercentage)<<endl;
+			DEBUG_LOG("Event no. "<<j<<", NEvents="<<fNEvents<<", NReadEvents="<<fNReadEvents<<", progressPercentage="<<thisProgressPercentage<<"  (int)(progressPercentage+thisProgressPercentage)="<<(int)(progressPercentage+thisProgressPercentage));
 
 			msg = QString("--> POCA Image Reco: Read data [Event No. %1] ...").arg(j);
 			emit(statusMessage(msg));
@@ -397,8 +429,7 @@ bool POCAThreadObj::ReadData(){
 
 	}//end loop events in file
 	
-	
-	cout<<"POCAThreadObj::ReadData(): INFO: "<<fNReadEvents<<" events read..."<<endl;
+	INFO_LOG(fNReadEvents<<" events read ...");
 	
 	//## Close input file
 	fInputFileStream.close();
@@ -464,6 +495,9 @@ void POCAThreadObj::process(){
 	logMessage= makeLogMessage(fLogMessage);
 	emit logSig(logMessage);
 	
+	//========================================
+	//==        INIT DATA STAGE
+	//========================================
 	//## Init data
 	bool init_status= Init();
 	//if(fIsFailure) return;
@@ -493,7 +527,7 @@ void POCAThreadObj::process(){
 		progressPercentage+= stagePercentage;
 		emit(statusProgress((int)(progressPercentage)));
 
-		cout<<"--> POCA Image Reco: Init progressPercentage="<<progressPercentage<< "  stagePercentage="<<stagePercentage<<endl;
+		DEBUG_LOG("Init progressPercentage="<<progressPercentage<<", stagePercentage="<<stagePercentage);
 
 		fLogMessage.status= eRunning;
 		fLogMessage.logMessage= msg.toStdString();
@@ -504,7 +538,9 @@ void POCAThreadObj::process(){
 	}
 
 
-
+	//========================================
+	//==        READ DATA STAGE
+	//========================================
 	//## Read data
 	bool read_status= ReadData();
 	//if(fIsFailure) return;
@@ -512,8 +548,9 @@ void POCAThreadObj::process(){
 	//emit(statusProgress((int)(progressPercentage)));
 
 	if(!read_status){
-	
-		msg = QString("--> POCA Image Reco: Read data failed!");
+		std::string errMsg("Data reading failed!");
+		ERROR_LOG(errMsg);
+		msg = QString(errMsg.c_str());
 		emit(statusMessage(msg));
 
 		fLogMessage.status= eFailure;
@@ -527,15 +564,15 @@ void POCAThreadObj::process(){
 
 	}
 	else{
-	
-		msg = QString("--> POCA Image Reco: Read data ... done!");
+		std::string statusMsg("Data reading completed!");
+		INFO_LOG(statusMsg);
+		msg = QString(statusMsg.c_str());
 		emit(statusMessage(msg));
 
 		progressPercentage+= stagePercentage;
 		emit(statusProgress((int)(progressPercentage)));
 
-		cout<<"--> POCA Image Reco: Read progressPercentage="<<progressPercentage<< "  stagePercentage="<<stagePercentage<<endl;
-
+		DEBUG_LOG("Read progressPercentage="<<progressPercentage<<", stagePercentage="<<stagePercentage);
 
 		fLogMessage.status= eRunning;
 		fLogMessage.logMessage= msg.toStdString();
@@ -545,9 +582,9 @@ void POCAThreadObj::process(){
 		emit logSig(logMessage);
 	}
 
-
-
-
+	//========================================
+	//==        RUN STAGE
+	//========================================
 	//## Calculate POCA and fill data
 	bool run_status= Run();
 	//if(fIsFailure) return;
@@ -555,8 +592,9 @@ void POCAThreadObj::process(){
 	//emit(statusProgress((int)(progressPercentage)));
 	
 	if(!run_status){
-	
-		msg = QString("--> POCA Image Reco: Run algo stage failed!");
+		std::string errMsg("POCA algorithm run stage failed!");
+		ERROR_LOG(errMsg);
+		msg = QString(errMsg.c_str());
 		emit(statusMessage(msg));
 
 		fLogMessage.status= eFailure;
@@ -567,17 +605,17 @@ void POCAThreadObj::process(){
 		emit logSig(logMessage);
 		
 		return;
-
-	}
+	}//close if
 	else{
-
-		msg = QString("--> POCA Image Reco: Run algo stage ... done!");
+		std::string statusMsg("POCA algorithm run stage completed!");
+		INFO_LOG(statusMsg);
+		msg = QString(statusMsg.c_str());
 		emit(statusMessage(msg));
 
 		progressPercentage+= stagePercentage;
 		emit(statusProgress((int)(progressPercentage)));
 
-		cout<<"--> POCA Image Reco: Run progressPercentage="<<progressPercentage<< "  stagePercentage="<<stagePercentage<<endl;
+		DEBUG_LOG("Run progressPercentage="<<progressPercentage<<", stagePercentage="<<stagePercentage);
 
 		fLogMessage.status= eRunning;
 		fLogMessage.logMessage= msg.toStdString();
@@ -588,14 +626,16 @@ void POCAThreadObj::process(){
 	}
 
 
-
+	//========================================
+	//==        DRAW STAGE
+	//========================================
 	//## Draw tomographic maps
 	bool draw_status= Draw();
-	//if(fIsFailure) return;
-
-	if(!draw_status){
 	
-		msg = QString("--> POCA Image Reco: Draw stage failed!");
+	if(!draw_status){
+		std::string errMsg("POCA algorithm draw stage failed!");
+		ERROR_LOG(errMsg);
+		msg = QString(errMsg.c_str());
 		emit(statusMessage(msg));
 
 		fLogMessage.status= eFailure;
@@ -609,14 +649,15 @@ void POCAThreadObj::process(){
 
 	}
 	else{
-
-		msg = QString("--> POCA Image Reco: Draw stage ... done!");
+		std::string statusMsg("POCA algorithm draw stage completed!");
+		INFO_LOG(statusMsg);
+		msg = QString(statusMsg.c_str());
 		emit(statusMessage(msg));
 		
 		progressPercentage+= stagePercentage;
 		emit(statusProgress((int)(progressPercentage)));
 
-		cout<<"--> POCA Image Reco: Draw progressPercentage="<<progressPercentage<< "  stagePercentage="<<stagePercentage<<endl;
+		DEBUG_LOG("Draw progressPercentage="<<progressPercentage<<", stagePercentage="<<stagePercentage);
 
 		fLogMessage.status= eRunning;
 		fLogMessage.logMessage= msg.toStdString();
@@ -626,15 +667,16 @@ void POCAThreadObj::process(){
 		emit logSig(logMessage);
 	}
 
+	//========================================
+	//==        SAVE TO FILE STAGE
+	//========================================
 	//## Save to file
 	bool save_status= Save();
-	//if(fIsFailure) return;
-	//progressPercentage+= stagePercentage;
-	//emit(statusProgress(max((int)(progressPercentage),100)));
-
-	if(!save_status){
 	
-		msg = QString("--> POCA Image Reco: Save stage failed!");
+	if(!save_status){
+		std::string errMsg("POCA algorithm save to file stage failed!");
+		ERROR_LOG(errMsg);
+		msg = QString(errMsg.c_str());
 		emit(statusMessage(msg));
 
 		fLogMessage.status= eFailure;
@@ -648,14 +690,15 @@ void POCAThreadObj::process(){
 
 	}
 	else{
-
-		msg = QString("--> POCA Image Reco: Save stage ... done!");
+		std::string statusMsg("POCA algorithm save to file stage completed!");
+		INFO_LOG(statusMsg);
+		msg = QString(statusMsg.c_str());
 		emit(statusMessage(msg));
 		
 		progressPercentage+= stagePercentage;
 		emit(statusProgress(max((int)(progressPercentage),100)));
 
-		cout<<"--> POCA Image Reco: Save progressPercentage="<<progressPercentage<< "  stagePercentage="<<stagePercentage<<endl;
+		DEBUG_LOG("Save progressPercentage="<<progressPercentage<< ", stagePercentage="<<stagePercentage);
 		
 		fLogMessage.status= eRunning;
 		fLogMessage.logMessage= msg.toStdString();
@@ -665,11 +708,14 @@ void POCAThreadObj::process(){
 		emit logSig(logMessage);
 	}
 
-
+	//========================================
+	//==        RETURN STATUS
+	//========================================
 	if(fIsFailure) {
+		std::string errMsg("POCA algorithm terminated with failure!");
+		ERROR_LOG(errMsg);
+		msg = QString(errMsg.c_str());
 		emit error();	
-	
-		QString msg = QString("--> POCA Image Reco: Terminated with failure!");
 		emit(statusMessage(msg));	
 
 		fLogMessage.status= eFailure;
@@ -680,8 +726,10 @@ void POCAThreadObj::process(){
 		emit logSig(logMessage);
 	}
 	else {
+		std::string statusMsg("POCA algorithm terminated with success!");
+		INFO_LOG(statusMsg);
+		msg = QString(statusMsg.c_str());
 		emit finished();
-		QString msg = QString("--> POCA Image Reco: Terminated with success!");
 		emit(statusMessage(msg));	
 		emit(statusProgress(max((int)(progressPercentage),100)));
 
@@ -698,7 +746,7 @@ void POCAThreadObj::process(){
 
 bool POCAThreadObj::Run(){
 
-	cout<<"POCAThreadObj::Run(): INFO: Start POCA reconstruction..."<<endl;
+	INFO_LOG("Start POCA reconstruction ...");
 	const int nplanes= 4;
 	double xHit[nplanes];
 	double yHit[nplanes];
@@ -714,7 +762,7 @@ bool POCAThreadObj::Run(){
 
 	//## Calculate POCA for all events
 	for(int j=0;j<fNReadEvents;j++){
-		//cout<<"--> Processing event "<<j<<"/"<<fNReadEvents<<endl;
+		if(j%10000) DEBUG_LOG("--> Processing event "<<j<<"/"<<fNReadEvents);
 
 		fEventId= fRawDataList[j].EventId;
 		fKinEnergy= fRawDataList[j].p;
@@ -738,7 +786,7 @@ bool POCAThreadObj::Run(){
 	
 					if(fabs(randx)<ConfigParser::fSigmaPosX && fabs(randy)<ConfigParser::fSigmaPosY && fabs(randz)<ConfigParser::fSigmaPosZ ) isGoodSmearing= true;
 					else {
-						//cout<<"LikelihoodImageReco::SetScatteringData(): INFO: Bad smearing (rand xyz="<<randx<<","<<randy<<","<<randz<<") ...re-generate random numbers!"<<endl;
+						DEBUG_LOG("Bad smearing (rand xyz="<<randx<<","<<randy<<","<<randz<<") ...re-generate random numbers!");
 					}
 				}//end while
 	
@@ -796,7 +844,7 @@ bool POCAThreadObj::Run(){
 		double t_in;
 		double t_out;
 		if(delta<=fPOCATolerance){//parallel lines
-			cerr<<"POCAThreadObj::Run(): WARNING: delta smaller than tolerance (1.e-08), setting safe values..."<<endl;
+			WARN_LOG("delta smaller than tolerance (1.e-08), setting safe values...");
 			t_in= 0.;	
 			t_out = (b>c ? d/b : e/c);	
 		}
@@ -813,11 +861,11 @@ bool POCAThreadObj::Run(){
 
 		// Check POCA values
 		if(TMath::IsNaN(fPOCAX) || TMath::IsNaN(fPOCAY) || TMath::IsNaN(fPOCAZ)){
-			cerr<<"POCAThreadObj::Run(): WARNING: NAN values for POCA coordinates...skip event!"<<endl;
+			WARN_LOG("NAN values for POCA coordinates...skip event!");
 			continue;
 		}
 		if(fabs(fPOCAX)==TMath::Infinity() || fabs(fPOCAY)==TMath::Infinity() || fabs(fPOCAZ)==TMath::Infinity()){
-			cerr<<"POCAThreadObj::Run(): WARNING: Inf values for POCA coordinates...skip event!"<<endl;
+			WARN_LOG("Inf values for POCA coordinates...skip event!");
 			continue;
 		}
 		// Check if POCA is inside the container 
@@ -825,7 +873,7 @@ bool POCAThreadObj::Run(){
      		fPOCAY<fContainerYStart || fPOCAY>fContainerYEnd ||
      		fPOCAZ<fContainerZStart || fPOCAZ>fContainerZEnd
 		){
-			//cerr<<"POCAThreadObj::Run(): INFO: POCA ("<<fPOCAX<<","<<fPOCAY<<","<<fPOCAZ<<") outside container ("<<fContainerXStart<<"-"<<fContainerYStart<< ","<<fContainerYStart<<"-"<<fContainerYEnd<<","<<fContainerZStart<<"-"<<fContainerZEnd<<")...skip event!"<<endl;
+			DEBUG_LOG("POCA ("<<fPOCAX<<","<<fPOCAY<<","<<fPOCAZ<<") outside container ("<<fContainerXStart<<"-"<<fContainerYStart<< ","<<fContainerYStart<<"-"<<fContainerYEnd<<","<<fContainerZStart<<"-"<<fContainerZEnd<<")...skip event!");
 			continue;
 		}
 
@@ -910,7 +958,7 @@ bool POCAThreadObj::Run(){
 
 	}//end loop events
 
-	cout<<"POCAThreadObj::Run(): INFO: "<<fNSelEvents<<" events selected..."<<endl;
+	INFO_LOG(fNSelEvents<<" events selected for POCA imaging ...");
 
 
 	//## Set to zero bins below Nevent threshold
@@ -973,8 +1021,6 @@ bool POCAThreadObj::Run(){
 	fout= fopen(fVisIVOOutputFileName.c_str(),"w");
 	fprintf(fout,"S\n");
 
-
-	
 	bool isAlarm= false;
 
 	for(int k=0;k<RecMap3D->GetNbinsZ();k++){
@@ -1070,13 +1116,12 @@ bool POCAThreadObj::Run(){
 
 
 
-bool POCAThreadObj::Draw(){
-
-
+bool POCAThreadObj::Draw()
+{
 	fMinPOCASignal= RecMap3D->GetMinimum(0);
 	fMaxPOCASignal= RecMap3D->GetMaximum();
 
-	cout<<"POCAThreadObj::Run(): INFO: min/max signal: "<<fMinPOCASignal<<"/"<<fMaxPOCASignal<<"  logScale="<<log10(fMinPOCASignal)<<"/"<<log10(fMaxPOCASignal)<<endl;
+	DEBUG_LOG("min/max signal: "<<fMinPOCASignal<<"/"<<fMaxPOCASignal<<"  logScale="<<log10(fMinPOCASignal)<<"/"<<log10(fMaxPOCASignal));
 	
 	
 	//## Draw YZ tomography
@@ -1215,7 +1260,7 @@ bool POCAThreadObj::Draw(){
 
 bool POCAThreadObj::Save(){
 
-	cout<<"POCAThreadObj::Save(): INFO: Saving results to file ..."<<endl;
+	INFO_LOG("Saving POCA results to file ...");
 	fOutputFile->cd();
 	fScatteringDataInfo->Write();
 	fInfoTree->Write();
@@ -1421,3 +1466,5 @@ void POCAThreadObj::SetGraphicsStyle(){
 	fTemperaturePalette= new TImagePalette(fNColourContours,colorList);
 
 }//close function
+
+}//close namespace

@@ -1,3 +1,20 @@
+// ******************************************************************************
+// * License and Disclaimer                                                     *
+// *                                                                            *
+// * Copyright 2018 Simone Riggi																			          *
+// *																																	          *
+// * This file is part of MuonPortalGUI																          *
+// * MuonPortalGUI is free software: you can redistribute it and/or modify it   *
+// * under the terms of the GNU General Public License as published by          *
+// * the Free Software Foundation, either * version 3 of the License,           *
+// * or (at your option) any later version.                                     *
+// * MuonPortalGUI is distributed in the hope that it will be useful, but 			*
+// * WITHOUT ANY WARRANTY; without even the implied warranty of                 * 
+// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.                       *
+// * See the GNU General Public License for more details. You should            * 
+// * have received a copy of the GNU General Public License along with          * 
+// * MuonPortalGUI. If not, see http://www.gnu.org/licenses/.                   *
+// ******************************************************************************
 /**
 * @file ConfigParser.cc
 * @class ConfigParser
@@ -8,6 +25,7 @@
 */
 
 #include <ConfigParser.h>
+#include <Logger.h>
 
 #include <cstdlib>
 #include <iomanip>
@@ -19,6 +37,8 @@
 #include <stdexcept>
 
 using namespace std;
+
+namespace MuonPortalNS {
 
 //## Detector info
 std::string ConfigParser::fInputFileName;
@@ -480,14 +500,15 @@ ConfigParser::~ConfigParser(){
 void ConfigParser::ReadConfig() {
 
 	// read configuration from file
-	cout<<"ConfigParser::ReadConfig(): INFO: Reading and parsing file "<<fConfigFileName.c_str()<<endl;
+	INFO_LOG("Reading and parsing file "<<fConfigFileName.c_str()<<" ...");
 
   ifstream in;  
   in.open(fConfigFileName.c_str());
   if(!in.good()) {
-    string errMsg = "ConfigParser::ReadConfig(): ERROR: Cannot read config file " + fConfigFileName
-      + " \n  ********* no configuration settings!!! ********* ";
-    throw std::runtime_error(errMsg);
+		std::stringstream ss;
+		ss<<"Cannot read config file "<<fConfigFileName<<" (no configuration settings!!!)";
+		ERROR_LOG(ss.str());
+    throw std::runtime_error(ss.str());
 		exit(1);
   }
 
@@ -541,7 +562,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fSmearTrackPoints= true;
 					else if(thisFlagValue.compare("F")==0) fSmearTrackPoints= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for smearTrackPoints, use T or F!";
+						string errMsg = "Invalid setting for smearTrackPoints, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -559,6 +581,7 @@ void ConfigParser::ReadConfig() {
 					else if(thisFlagValue.compare("F")==0) fUsePOCAAlgorithm= false;
 					else{
 						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for usePOCAAlgorithm, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -569,7 +592,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUsePOCAQueueRun= true;
 					else if(thisFlagValue.compare("F")==0) fUsePOCAQueueRun= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for usePOCAQueueRun, use T or F!";
+						string errMsg = "Invalid setting for usePOCAQueueRun, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -585,7 +609,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUsePOCAMaxNEvents= true;
 					else if(thisFlagValue.compare("F")==0) fUsePOCAMaxNEvents= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for usePOCANEventCut, use T or F!";
+						string errMsg = "Invalid setting for usePOCANEventCut, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -596,7 +621,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUsePOCAThetaCut= true;
 					else if(thisFlagValue.compare("F")==0) fUsePOCAThetaCut= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for usePOCAScatteringAngleCut, use T or F!";
+						string errMsg = "Invalid setting for usePOCAScatteringAngleCut, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -607,7 +633,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUsePOCAEnergyCut= true;
 					else if(thisFlagValue.compare("F")==0) fUsePOCAEnergyCut= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for usePOCAEnergyCut, use T or F!";
+						string errMsg = "Invalid setting for usePOCAEnergyCut, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -618,7 +645,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUsePOCAThetaWeight= true;
 					else if(thisFlagValue.compare("F")==0) fUsePOCAThetaWeight= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for usePOCAThetaWeight, use T or F!";
+						string errMsg = "Invalid setting for usePOCAThetaWeight, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -629,7 +657,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUsePOCAAverageSignal= true;
 					else if(thisFlagValue.compare("F")==0) fUsePOCAAverageSignal= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for usePOCAAverageSignal, use T or F!";
+						string errMsg = "Invalid setting for usePOCAAverageSignal, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -647,7 +676,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseClusteringAlgorithm= true;
 					else if(thisFlagValue.compare("F")==0) fUseClusteringAlgorithm= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useClusteringAlgorithm, use T or F!";
+						string errMsg = "Invalid setting for useClusteringAlgorithm, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -658,7 +688,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseClusteringQueueRun= true;
 					else if(thisFlagValue.compare("F")==0) fUseClusteringQueueRun= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useClusteringQueueRun, use T or F!";
+						string errMsg = "Invalid setting for useClusteringQueueRun, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -672,7 +703,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseClusteringMaxNEvents= true;
 					else if(thisFlagValue.compare("F")==0) fUseClusteringMaxNEvents= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useClusteringNEventCut, use T or F!";
+						string errMsg = "Invalid setting for useClusteringNEventCut, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -683,7 +715,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseClusteringThetaCut= true;
 					else if(thisFlagValue.compare("F")==0) fUseClusteringThetaCut= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useClusteringScatteringAngleCut, use T or F!";
+						string errMsg = "Invalid setting for useClusteringScatteringAngleCut, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -694,7 +727,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseClusteringEnergyCut= true;
 					else if(thisFlagValue.compare("F")==0) fUseClusteringEnergyCut= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useClusteringEnergyCut, use T or F!";
+						string errMsg = "Invalid setting for useClusteringEnergyCut, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -705,7 +739,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseClusteringThetaWeight= true;
 					else if(thisFlagValue.compare("F")==0) fUseClusteringThetaWeight= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useClusteringThetaWeight, use T or F!";
+						string errMsg = "Invalid setting for useClusteringThetaWeight, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -716,7 +751,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseClusteringAverageSignal= true;
 					else if(thisFlagValue.compare("F")==0) fUseClusteringAverageSignal= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useClusteringAverageSignal, use T or F!";
+						string errMsg = "Invalid setting for useClusteringAverageSignal, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -738,7 +774,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseACFAlgorithm= true;
 					else if(thisFlagValue.compare("F")==0) fUseACFAlgorithm= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useACFAlgorithm, use T or F!";
+						string errMsg = "Invalid setting for useACFAlgorithm, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -749,7 +786,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseACFQueueRun= true;
 					else if(thisFlagValue.compare("F")==0) fUseACFQueueRun= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useACFQueueRun, use T or F!";
+						string errMsg = "Invalid setting for useACFQueueRun, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -766,7 +804,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseACFMaxNEvents= true;
 					else if(thisFlagValue.compare("F")==0) fUseACFMaxNEvents= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useACFNEventCut, use T or F!";
+						string errMsg = "Invalid setting for useACFNEventCut, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -778,7 +817,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseACFEnergyCut= true;
 					else if(thisFlagValue.compare("F")==0) fUseACFEnergyCut= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useACFEnergyCut, use T or F!";
+						string errMsg = "Invalid setting for useACFEnergyCut, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -790,7 +830,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseACFThetaCut= true;
 					else if(thisFlagValue.compare("F")==0) fUseACFThetaCut= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useACFScatteringAngleCut, use T or F!";
+						string errMsg = "Invalid setting for useACFScatteringAngleCut, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -801,7 +842,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseACFThetaWeight= true;
 					else if(thisFlagValue.compare("F")==0) fUseACFThetaWeight= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useACFThetaWeight, use T or F!";
+						string errMsg = "Invalid setting for useACFThetaWeight, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -826,7 +868,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseEMLLQueueRun= true;
 					else if(thisFlagValue.compare("F")==0) fUseEMLLQueueRun= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useEMLLQueueRun, use T or F!";
+						string errMsg = "Invalid setting for useEMLLQueueRun, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -837,7 +880,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseEMLLAlgorithm= true;
 					else if(thisFlagValue.compare("F")==0) fUseEMLLAlgorithm= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useEMLLAlgorithm, use T or F!";
+						string errMsg = "Invalid setting for useEMLLAlgorithm, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -849,7 +893,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseEMLLParallelAlgorithm= true;
 					else if(thisFlagValue.compare("F")==0) fUseEMLLParallelAlgorithm= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useEMLLParallelAlgorithm, use T or F!";
+						string errMsg = "Invalid setting for useEMLLParallelAlgorithm, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -861,7 +906,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseEMLLMaxNEvents= true;
 					else if(thisFlagValue.compare("F")==0) fUseEMLLMaxNEvents= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useEMLLNEventCut, use T or F!";
+						string errMsg = "Invalid setting for useEMLLNEventCut, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -873,7 +919,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseEMLLEnergyCut= true;
 					else if(thisFlagValue.compare("F")==0) fUseEMLLEnergyCut= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useEMLLEnergyCut, use T or F!";
+						string errMsg = "Invalid setting for useEMLLEnergyCut, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -885,7 +932,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fEMLLSmearTimeOfFlight= true;
 					else if(thisFlagValue.compare("F")==0) fEMLLSmearTimeOfFlight= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for smearEMLLTimeOfFlight, use T or F!";
+						string errMsg = "Invalid setting for smearEMLLTimeOfFlight, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -897,7 +945,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseEMLLTrackSpeedCut= true;
 					else if(thisFlagValue.compare("F")==0) fUseEMLLTrackSpeedCut= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useEMLLTrackSpeedCut, use T or F!";
+						string errMsg = "Invalid setting for useEMLLTrackSpeedCut, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -915,7 +964,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseEMLLTrueMomentum= true;
 					else if(thisFlagValue.compare("F")==0) fUseEMLLTrueMomentum= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useTrueMomentum, use T or F!";
+						string errMsg = "Invalid setting for useTrueMomentum, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -932,7 +982,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseDetectorCovariance= true;
 					else if(thisFlagValue.compare("F")==0) fUseDetectorCovariance= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useDetectorCovariance, use T or F!";
+						string errMsg = "Invalid setting for useDetectorCovariance, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -943,7 +994,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseRegularization= true;
 					else if(thisFlagValue.compare("F")==0) fUseRegularization= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useRegularization, use T or F!";
+						string errMsg = "Invalid setting for useRegularization, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -955,7 +1007,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseMedianUpdate= true;
 					else if(thisFlagValue.compare("F")==0) fUseMedianUpdate= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useMedianUpdate, use T or F!";
+						string errMsg = "Invalid setting for useMedianUpdate, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -969,7 +1022,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseResErrStopping= true;
 					else if(thisFlagValue.compare("F")==0) fUseResErrStopping= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useResErrStopping, use T or F!";
+						string errMsg = "Invalid setting for useResErrStopping, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -982,7 +1036,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseLogLikeStopping= true;
 					else if(thisFlagValue.compare("F")==0) fUseLogLikeStopping= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useLogLikeStopping, use T or F!";
+						string errMsg = "Invalid setting for useLogLikeStopping, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -993,7 +1048,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUsePOCAInLL= true;
 					else if(thisFlagValue.compare("F")==0) fUsePOCAInLL= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for usePOCAInLL, use T or F!";
+						string errMsg = "Invalid setting for usePOCAInLL, use T or F!";			
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -1005,7 +1061,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseSideEvents= true;
 					else if(thisFlagValue.compare("F")==0) fUseSideEvents= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useSideEvents, use T or F!";
+						string errMsg = "Invalid setting for useSideEvents, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -1016,13 +1073,13 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseTopBottomEvents= true;
 					else if(thisFlagValue.compare("F")==0) fUseTopBottomEvents= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useTopBottomEvents, use T or F!";
+						string errMsg = "Invalid setting for useTopBottomEvents, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
 		  	}
 
-				
 
 				else if(descriptor.compare("useEMLLScatteringAngleCut")==0){
 					std::string thisFlagValue;
@@ -1030,7 +1087,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseEMLLThetaCut= true;
 					else if(thisFlagValue.compare("F")==0) fUseEMLLThetaCut= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useScatteringAngleCut, use T or F!";
+						string errMsg = "Invalid setting for useScatteringAngleCut, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -1041,7 +1099,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseEMLLDisplacementCut= true;
 					else if(thisFlagValue.compare("F")==0) fUseEMLLDisplacementCut= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useDisplacementCut, use T or F!";
+						string errMsg = "Invalid setting for useDisplacementCut, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -1056,7 +1115,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseFilterVoxelEvents= true;
 					else if(thisFlagValue.compare("F")==0) fUseFilterVoxelEvents= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useFilterVoxelEvents, use T or F!";
+						string errMsg = "Invalid setting for useFilterVoxelEvents, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -1067,7 +1127,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fUseEMLLQuantileUpdate= true;
 					else if(thisFlagValue.compare("F")==0) fUseEMLLQuantileUpdate= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useQuantileUpdate, use T or F!";
+						string errMsg = "Invalid setting for useQuantileUpdate, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -1079,7 +1140,8 @@ void ConfigParser::ReadConfig() {
 					if(thisFlagValue.compare("T")==0) fEMLLUseClusteringInfo= true;
 					else if(thisFlagValue.compare("F")==0) fEMLLUseClusteringInfo= false;
 					else{
-						string errMsg = "ConfigParser::ReadConfig(): ERROR: Invalid setting for useClusteringInfo, use T or F!";
+						string errMsg = "Invalid setting for useClusteringInfo, use T or F!";
+						ERROR_LOG(errMsg);
     				throw std::runtime_error(errMsg);
 						exit(1);
 					}
@@ -1092,9 +1154,10 @@ void ConfigParser::ReadConfig() {
 				else{
 					//config setting not defined
 					line >> descriptor;
-					string errMsg = "ConfigParser::ReadConfig(): ERROR: Descriptor " + descriptor
-      	                + " not defined \n  ********* bad settings!!! ********* ";
-    			throw std::runtime_error(errMsg);
+					std::stringstream ss;
+					ss<<"Descriptor "<<descriptor<<" not defined (bad settings)!";
+					ERROR_LOG(ss.str());
+    			throw std::runtime_error(ss.str());
 					exit(1);
 				}//close else
 
@@ -1109,7 +1172,6 @@ void ConfigParser::ReadConfig() {
 	
 	//## Print parsed info
 	Print();
-	
 
 }//close ReadConfig()
 
@@ -1125,4 +1187,4 @@ void ConfigParser::Print(){
 }//close Print()
 
 
-
+}//close namespace

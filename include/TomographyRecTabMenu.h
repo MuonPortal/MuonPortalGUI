@@ -1,5 +1,28 @@
-
-
+// ******************************************************************************
+// * License and Disclaimer                                                     *
+// *                                                                            *
+// * Copyright 2018 Simone Riggi																			          *
+// *																																	          *
+// * This file is part of MuonPortalGUI																          *
+// * MuonPortalGUI is free software: you can redistribute it and/or modify it   *
+// * under the terms of the GNU General Public License as published by          *
+// * the Free Software Foundation, either * version 3 of the License,           *
+// * or (at your option) any later version.                                     *
+// * MuonPortalGUI is distributed in the hope that it will be useful, but 			*
+// * WITHOUT ANY WARRANTY; without even the implied warranty of                 * 
+// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.                       *
+// * See the GNU General Public License for more details. You should            * 
+// * have received a copy of the GNU General Public License along with          * 
+// * MuonPortalGUI. If not, see http://www.gnu.org/licenses/.                   *
+// ******************************************************************************
+/**
+* @file TomographyRecTabMenu.h
+* @class TomographyRecTabMenu
+* @brief Tomography imaging tab menu
+* 
+* @author S. Riggi
+* @date 25/04/2010
+*/
 
 #ifndef TOMOGRAPHYREC_TAB_MENU_H
 #define TOMOGRAPHYREC_TAB_MENU_H
@@ -9,24 +32,23 @@
 #include <QObject>
 
 
-#include <DownloaderThreadObj.h>
-#include <POCAThreadObj.h>
-#include <EMTomographyRecoThreadObj.h>
-#include <ACFAnalysisThreadObj.h>
-#include <FOFThreadObj.h>
+//#include <DownloaderThreadObj.h>
+//#include <POCAThreadObj.h>
+//#include <EMTomographyRecoThreadObj.h>
+//#include <ACFAnalysisThreadObj.h>
+//#include <FOFThreadObj.h>
 
-#include <POCAViewerThreadObj.h>
-#include <EMLLViewerThreadObj.h>
-#include <ACFViewerThreadObj.h>
-#include <ClusteringViewerThreadObj.h>
-
-#include <VolumeRenderingViewer.h>
+//#include <POCAViewerThreadObj.h>
+//#include <EMLLViewerThreadObj.h>
+//#include <ACFViewerThreadObj.h>
+//#include <ClusteringViewerThreadObj.h>
+//#include <VolumeRenderingViewer.h>
 
 #include <phonon/mediaobject.h>
 #include <phonon/audiooutput.h>
 #include <QSound>
 
-#include <MyThread.h>
+//#include <MyThread.h>
 
 #include <QUrl>
 #include <QByteArray>
@@ -60,6 +82,14 @@ class QtNetwork;
 class QThread;
 class QStatusBar;
 class QSpacerItem;
+
+namespace MuonPortalNS {
+
+class DownloaderThreadObj;
+class POCAThreadObj;
+class EMTomographyRecoThreadObj;
+class ACFAnalysisThreadObj;
+class FOFThreadObj;
 
 class TomographyRecTabMenu : public QWidget {
      
@@ -306,7 +336,7 @@ class TomographyRecTabMenu : public QWidget {
 		DownloaderThreadObj* downloaderThreadObj;
 		QThread* pocaRecoThread;
 		POCAThreadObj* pocaRecoThreadObj;
-		//MyThread* emTomographyRecoThread;
+		
 		QThread* emTomographyRecoThread;
 		EMTomographyRecoThreadObj* emTomographyRecoThreadObj;
 		QThread* acfAnalysisThread;
@@ -346,8 +376,6 @@ class TomographyRecTabMenu : public QWidget {
 };
 
 
-
-
-
+}//close namespace
 
 #endif

@@ -1,4 +1,30 @@
+// ******************************************************************************
+// * License and Disclaimer                                                     *
+// *                                                                            *
+// * Copyright 2018 Simone Riggi																			          *
+// *																																	          *
+// * This file is part of MuonPortalGUI																          *
+// * MuonPortalGUI is free software: you can redistribute it and/or modify it   *
+// * under the terms of the GNU General Public License as published by          *
+// * the Free Software Foundation, either * version 3 of the License,           *
+// * or (at your option) any later version.                                     *
+// * MuonPortalGUI is distributed in the hope that it will be useful, but 			*
+// * WITHOUT ANY WARRANTY; without even the implied warranty of                 * 
+// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.                       *
+// * See the GNU General Public License for more details. You should            * 
+// * have received a copy of the GNU General Public License along with          * 
+// * MuonPortalGUI. If not, see http://www.gnu.org/licenses/.                   *
+// ******************************************************************************
+/**
+* @file POCATab.h
+* @class POCATab
+* @brief GUI POCA algorithm tab menu
+* 
+* @author S. Riggi
+* @date 25/04/2010
+*/
 #include <POCATab.h>
+#include <Logger.h>
 #include <Gui.h>
 
 #include <QtGui>
@@ -8,6 +34,7 @@
 
 using namespace std;
 
+namespace MuonPortalNS {
 
 POCATab::POCATab(QWidget *parent)
      : QWidget(parent)
@@ -16,7 +43,6 @@ POCATab::POCATab(QWidget *parent)
 	//## Set config file name	
 	fPOCAConfigFileName= Gui::GUI_CONFIG_DIR + std::string("/POCAConfig.cfg");
 	
-
 	//## Define objects
 	groupBox_POCA= new QGroupBox(tr("POCA Algorithm"));
 	groupBox_POCA->setObjectName(QString::fromUtf8("groupBox_POCA"));
@@ -308,7 +334,9 @@ void POCATab::SetPOCAOptions(){
 	//## Dump config file
 	bool status= DumpPOCAConfigFile();
 	if(!status){
-		QMessageBox::critical(this->window(), "ERROR", "POCATab::SetPOCAOptions(): Cannot dump config options to file...exit!");
+		std::string errMsg("Cannot dump config options to file...exit!");
+		ERROR_LOG(errMsg);
+		QMessageBox::critical(this->window(), "ERROR", errMsg.c_str());
 		QMetaObject::invokeMethod(this->window(), "close", Qt::QueuedConnection);
 	}
 
@@ -422,4 +450,4 @@ void POCATab::BrowseOutputFile(){
 }//close POCATab::BrowseOutputFile()
 
 
-
+}//close namespace

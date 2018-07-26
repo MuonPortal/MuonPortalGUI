@@ -8,7 +8,7 @@
 #include <getopt.h>
 
 using namespace std;
-
+using namespace MuonPortalNS;
 
 static const struct option options_tab[] = {
   // name, has_arg, &flag, val

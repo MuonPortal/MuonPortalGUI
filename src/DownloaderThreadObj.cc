@@ -1,4 +1,30 @@
+// ******************************************************************************
+// * License and Disclaimer                                                     *
+// *                                                                            *
+// * Copyright 2018 Simone Riggi																			          *
+// *																																	          *
+// * This file is part of MuonPortalGUI																          *
+// * MuonPortalGUI is free software: you can redistribute it and/or modify it   *
+// * under the terms of the GNU General Public License as published by          *
+// * the Free Software Foundation, either * version 3 of the License,           *
+// * or (at your option) any later version.                                     *
+// * MuonPortalGUI is distributed in the hope that it will be useful, but 			*
+// * WITHOUT ANY WARRANTY; without even the implied warranty of                 * 
+// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.                       *
+// * See the GNU General Public License for more details. You should            * 
+// * have received a copy of the GNU General Public License along with          * 
+// * MuonPortalGUI. If not, see http://www.gnu.org/licenses/.                   *
+// ******************************************************************************
+/**
+* @file DownloaderThreadObj.h
+* @class DownloaderThreadObj
+* @brief Download data processing thread
+* 
+* @author S. Riggi
+* @date 25/04/2010
+*/
 #include <DownloaderThreadObj.h>
+#include <Logger.h>
 #include <Gui.h>
 #include <Utilities.h>
 #include <QtGui>
@@ -36,6 +62,7 @@
 
 using namespace std;
 
+namespace MuonPortalNS {
 
 
 DownloaderThreadObj::DownloaderThreadObj() {
@@ -277,28 +304,23 @@ QString DownloaderThreadObj::makeLogMessage(LOG_MESSAGE msg){
 }//close DownloaderThreadObj::makeLogMessage()
 
 
-
-
-bool DownloaderThreadObj::sender(QString message){
-
-	
+bool DownloaderThreadObj::sender(QString message)
+{	
 	bool status= true;	
 	QByteArray data;
 	data.append(message);
 	
 	//## Create the tcp socket for communication
-	cout<<"DownloaderThreadObj::sender(): INFO: Create a tcp client communicating with host "<<fGuiHostName<<" on port "<<fGuiPort<<endl;
+	INFO_LOG("Creating a tcp client communicating with host "<<fGuiHostName<<" on port "<<fGuiPort<<" ...");
 	socket= new QTcpSocket(this);
 	connect(socket, SIGNAL(connected()),this, SLOT(connected()));
 	socket->connectToHost(QString::fromStdString(fGuiHostName),fGuiPort);	
 	
-
 	//## Send message	
 	if( socket->waitForConnected() ) {
-		cout<<"DownloaderThreadObj::sender(): INFO: Send this message via socket: "<<qPrintable(message)<<endl;
+		DEBUG_LOG("Send this message via socket: "<<qPrintable(message)<<" ...");
   	socket->write(data);
-		cout<<"DownloaderThreadObj::sender(): Written to socket..."<<endl;
-
+		DEBUG_LOG("Written to socket...");
 		socket->flush();
 		socket->waitForBytesWritten(3000);
   }
@@ -309,4 +331,4 @@ bool DownloaderThreadObj::sender(QString message){
 
 }//close DownloaderThreadObj::sender()
 
-
+}//close namespace

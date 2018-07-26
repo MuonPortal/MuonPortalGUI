@@ -1,4 +1,30 @@
+// ******************************************************************************
+// * License and Disclaimer                                                     *
+// *                                                                            *
+// * Copyright 2018 Simone Riggi																			          *
+// *																																	          *
+// * This file is part of MuonPortalGUI																          *
+// * MuonPortalGUI is free software: you can redistribute it and/or modify it   *
+// * under the terms of the GNU General Public License as published by          *
+// * the Free Software Foundation, either * version 3 of the License,           *
+// * or (at your option) any later version.                                     *
+// * MuonPortalGUI is distributed in the hope that it will be useful, but 			*
+// * WITHOUT ANY WARRANTY; without even the implied warranty of                 * 
+// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.                       *
+// * See the GNU General Public License for more details. You should            * 
+// * have received a copy of the GNU General Public License along with          * 
+// * MuonPortalGUI. If not, see http://www.gnu.org/licenses/.                   *
+// ******************************************************************************
+/**
+* @file Gui.cc
+* @class Gui
+* @brief Main widget
+* 
+* @author S. Riggi
+* @date 25/04/2010
+*/
 #include <Gui.h>
+#include <Logger.h>
 
 #include <TabMenu.h>
 #include <ConfigParser.h>
@@ -6,6 +32,9 @@
 
 #include <QtGui>
 #include <QUuid>
+
+
+namespace MuonPortalNS {
 
 ConfigParser* Gui::fConfigParser;
 TomographyRecTabMenu* Gui::fTomographyRecTabMenu;
@@ -19,10 +48,8 @@ std::string Gui::SHELL_DIR;
 std::string Gui::GUI_HOSTNAME;
 int Gui::GUI_PORT= 9999;
 std::string Gui::GUI_KEY;
-
 std::string Gui::SEI_HOSTNAME;
 std::string Gui::SEI_USERNAME;
-
 std::string Gui::SOCK_END_PATTERN= "#END#";
 long int Gui::SOCK_LISTEN_PORT= 9930;
 
@@ -30,18 +57,16 @@ long int Gui::SOCK_LISTEN_PORT= 9930;
 Gui::Gui(QWidget *parent)
 		 : QWidget(parent)  
 {
-
 	//## Set GUI env vars
 	bool status= SetGuiEnvVariables();
 	if(!status){
-		QMessageBox::critical(this, "ERROR", "Gui::Gui(): Environment variables setting failed...exit!");
+		QMessageBox::critical(this, "ERROR", "System environment variables setting failed!");
 		QMetaObject::invokeMethod(this, "close", Qt::QueuedConnection);
 		return;	
 	}
 
 	//## Init class widgets
 	fConfigParser= new ConfigParser; 
-	
 	
 	fAboutTabMenu= new AboutTabMenu(this);
 	fAboutTabMenu->setObjectName(QString::fromUtf8("tab_AboutMenu"));
@@ -52,7 +77,6 @@ Gui::Gui(QWidget *parent)
 	fTabMenu= new TabMenu(this);
 	fTabMenu->setObjectName(QString::fromUtf8("tab_Menu"));
 	
-
 	contentsWidget = new QListWidget(this);
   contentsWidget->setViewMode(QListView::IconMode);
   contentsWidget->setIconSize(QSize(100, 100));
@@ -73,10 +97,8 @@ Gui::Gui(QWidget *parent)
 	pushButton_Exit->setIcon(QIcon(exitButton_imagepath.c_str()));
 	pushButton_Exit->setFixedSize(QSize(60,30));
 
-
 	createIcons();
   contentsWidget->setCurrentRow(0);
-
 
 	//## Set object actions
 	connect(pushButton_Exit, SIGNAL(clicked()), this, SLOT(close()));
@@ -100,8 +122,6 @@ Gui::Gui(QWidget *parent)
   setWindowTitle(tr("MPToolkit GUI"));
 	setFixedSize(1100, 700);
 
-	
-
 }//close constructor
 
 
@@ -112,7 +132,9 @@ bool Gui::SetGuiEnvVariables()
 	QString shelldir_name= QString::fromAscii(qgetenv("SHELL").data());
 	QFileInfo shellfileinfo(shelldir_name);
 	if(!shellfileinfo.exists()){
-		QMessageBox::critical(this, "ERROR", "Gui::SetGuiEnvVariables(): Cannot get shell path directory (did you export SHELL variable?)...exit!");
+		std::string errMsg= "Cannot get shell path directory (did you export SHELL variable?)!";
+		ERROR_LOG(errMsg);
+		QMessageBox::critical(this, "ERROR", errMsg.c_str());
 		QMetaObject::invokeMethod(this, "close", Qt::QueuedConnection);
 		return false;
 	}
@@ -123,7 +145,9 @@ bool Gui::SetGuiEnvVariables()
 	QString dir_name= QString::fromAscii(qgetenv("MUPORTAL_GUI_ROOT").data());
 	QDir dir= QDir(dir_name);
 	if(!dir.exists()){
-		QMessageBox::critical(this, "ERROR", "MUPORTAL_GUI_ROOT env var not set or set to a not-existing directory!");
+		std::string errMsg= "MUPORTAL_GUI_ROOT env var not set or set to a not-existing directory!";
+		ERROR_LOG(errMsg);
+		QMessageBox::critical(this, "ERROR", errMsg.c_str());
 		QMetaObject::invokeMethod(this, "close", Qt::QueuedConnection);
 		return false;
 	}
@@ -281,3 +305,4 @@ void Gui::changePage(QListWidgetItem *current, QListWidgetItem *previous){
 }//close Gui::changePage()
 
 
+}//close namespace

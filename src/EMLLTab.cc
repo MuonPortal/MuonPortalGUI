@@ -1,4 +1,30 @@
+// ******************************************************************************
+// * License and Disclaimer                                                     *
+// *                                                                            *
+// * Copyright 2018 Simone Riggi																			          *
+// *																																	          *
+// * This file is part of MuonPortalGUI																          *
+// * MuonPortalGUI is free software: you can redistribute it and/or modify it   *
+// * under the terms of the GNU General Public License as published by          *
+// * the Free Software Foundation, either * version 3 of the License,           *
+// * or (at your option) any later version.                                     *
+// * MuonPortalGUI is distributed in the hope that it will be useful, but 			*
+// * WITHOUT ANY WARRANTY; without even the implied warranty of                 * 
+// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.                       *
+// * See the GNU General Public License for more details. You should            * 
+// * have received a copy of the GNU General Public License along with          * 
+// * MuonPortalGUI. If not, see http://www.gnu.org/licenses/.                   *
+// ******************************************************************************
+/**
+* @file EMLLTab.cc
+* @class EMLLTab
+* @brief GUI EM-ML algorithm tab menu
+* 
+* @author S. Riggi
+* @date 25/04/2010
+*/
 #include <EMLLTab.h>
+#include <Logger.h>
 #include <Gui.h>
 
 #include <QtGui>
@@ -8,12 +34,12 @@
 
 using namespace std;
 
+namespace MuonPortalNS {
 
 EMLLTab::EMLLTab(QWidget *parent)
      : QWidget(parent)
 {
 	
-
 	//## Set config file name	
 	fEMLLConfigFileName= Gui::GUI_CONFIG_DIR + std::string("/EMMLConfig.cfg");
 	
@@ -713,7 +739,9 @@ void EMLLTab::SetEMLLOptions(){
 	//## Dump config file
 	bool status= DumpEMLLConfigFile();
 	if(!status){
-		QMessageBox::critical(this->window(), "ERROR", "EMLLTab::SetEMLLOptions(): Cannot dump config options to file...exit!");
+		std::string errMsg("Cannot dump config options to file...exit!");
+		ERROR_LOG(errMsg);
+		QMessageBox::critical(this->window(), "ERROR", errMsg.c_str());
 		QMetaObject::invokeMethod(this->window(), "close", Qt::QueuedConnection);
 	}
 
@@ -902,3 +930,4 @@ void EMLLTab::BrowseClusteringFile(){
 	
 }//close EMLLTab::BrowseClusteringFile()
 
+}//close namespace

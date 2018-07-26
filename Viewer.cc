@@ -14,6 +14,7 @@
 #include <getopt.h>
 
 using namespace std;
+using namespace MuonPortalNS;
 
 void viewPOCA(int argc, char *argv[],std::string filename);
 void viewFOF(int argc, char *argv[],std::string filename);

@@ -341,13 +341,13 @@ $(SRCDIR_GUI)/moc_parserrunnable.cxx: $(QJSON_DIR)/include/qjson/parserrunnable.
 
 PRINTINFO: 
 	@echo 'Compiling $(EXE) on a $(LBITS) bit machine' 
-	@echo 'SRCDIR= $(SRCDIR)' 
-	@echo 'USER_SRCS= $(USER_SRCS)'
-	@echo 'OBJS= $(OBJS)' 
-	@echo 'INCDIR_GUI= $(INCDIR_GUI)'
-	@echo 'MOC_HEADERS= $(MOC_HEADERS)'
-	@echo 'MOC_SOURCES= $(MOC_SOURCES)'
-	@echo 'MOC_OBJ= $(MOC_OBJ)'
+#@echo 'SRCDIR= $(SRCDIR)' 
+#@echo 'USER_SRCS= $(USER_SRCS)'
+#@echo 'OBJS= $(OBJS)' 
+#@echo 'INCDIR_GUI= $(INCDIR_GUI)'
+#@echo 'MOC_HEADERS= $(MOC_HEADERS)'
+#@echo 'MOC_SOURCES= $(MOC_SOURCES)'
+#@echo 'MOC_OBJ= $(MOC_OBJ)'
 
 
 GETOBJS:

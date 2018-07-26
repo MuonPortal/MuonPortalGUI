@@ -1,5 +1,31 @@
+// ******************************************************************************
+// * License and Disclaimer                                                     *
+// *                                                                            *
+// * Copyright 2018 Simone Riggi																			          *
+// *																																	          *
+// * This file is part of MuonPortalGUI																          *
+// * MuonPortalGUI is free software: you can redistribute it and/or modify it   *
+// * under the terms of the GNU General Public License as published by          *
+// * the Free Software Foundation, either * version 3 of the License,           *
+// * or (at your option) any later version.                                     *
+// * MuonPortalGUI is distributed in the hope that it will be useful, but 			*
+// * WITHOUT ANY WARRANTY; without even the implied warranty of                 * 
+// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.                       *
+// * See the GNU General Public License for more details. You should            * 
+// * have received a copy of the GNU General Public License along with          * 
+// * MuonPortalGUI. If not, see http://www.gnu.org/licenses/.                   *
+// ******************************************************************************
+/**
+* @file TabMenu.h
+* @class TabMenu
+* @brief GUI tab menu
+* 
+* @author S. Riggi
+* @date 25/04/2010
+*/
 #include <TabMenu.h>
 #include <Gui.h>
+#include <Logger.h>
 #include <Utilities.h>
 #include <QtGui>
 
@@ -7,18 +33,17 @@
 
 using namespace std;
 
+namespace MuonPortalNS {
 
-TabMenu::TabMenu(QWidget *parent){
- 	
+TabMenu::TabMenu(QWidget *parent)
+{ 	
 	//## Create tabs  
 	fTabMenu = new QTabWidget(parent);
   fTabMenu->setObjectName(QString::fromUtf8("tab_Menu"));
   
-	
 	fContainerTab= new ContainerTab(fTabMenu);
 	fContainerTab->setObjectName(QString::fromUtf8("tab_Container"));
 
-	
 	fPOCATab= new POCATab(fTabMenu);
 	fPOCATab->setObjectName(QString::fromUtf8("tab_POCA"));
 
@@ -78,8 +103,7 @@ TabMenu::TabMenu(QWidget *parent){
 void TabMenu::SetTabMenuOptions(){
 
 	//## Set all tab options
-	cout<<"================="<<endl;
-	cout<<"==> SET OPTIONS "<<endl;
+	INFO_LOG("Setting GUI options...");
 	fContainerTab->SetContainerOptions();
 	fPOCATab->SetPOCAOptions();
 	fEMLLTab->SetEMLLOptions();
@@ -89,5 +113,5 @@ void TabMenu::SetTabMenuOptions(){
 	
 }//close TabMenu::SetTabMenuOptions()
 
-
+}//close namespace
 

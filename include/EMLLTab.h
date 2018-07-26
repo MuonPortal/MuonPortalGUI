@@ -1,3 +1,28 @@
+// ******************************************************************************
+// * License and Disclaimer                                                     *
+// *                                                                            *
+// * Copyright 2018 Simone Riggi																			          *
+// *																																	          *
+// * This file is part of MuonPortalGUI																          *
+// * MuonPortalGUI is free software: you can redistribute it and/or modify it   *
+// * under the terms of the GNU General Public License as published by          *
+// * the Free Software Foundation, either * version 3 of the License,           *
+// * or (at your option) any later version.                                     *
+// * MuonPortalGUI is distributed in the hope that it will be useful, but 			*
+// * WITHOUT ANY WARRANTY; without even the implied warranty of                 * 
+// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.                       *
+// * See the GNU General Public License for more details. You should            * 
+// * have received a copy of the GNU General Public License along with          * 
+// * MuonPortalGUI. If not, see http://www.gnu.org/licenses/.                   *
+// ******************************************************************************
+/**
+* @file EMLLTab.h
+* @class EMLLTab
+* @brief GUI EM-ML algorithm tab menu
+* 
+* @author S. Riggi
+* @date 25/04/2010
+*/
 #ifndef EMLL_TAB_H
 #define EMLL_TAB_H
 
@@ -18,6 +43,7 @@ class QSpinBox;
 class QDoubleSpinBox;
 class QRadioButton;
 
+namespace MuonPortalNS {
 
 class EMLLTab : public QWidget {
      
@@ -116,6 +142,8 @@ class EMLLTab : public QWidget {
 		QSpinBox* spinbox_NEventThreshold;
 		QComboBox* comboBox_drawStyle;
 
-};
+};//close class EMLLTab
+
+}//close namespace
 
 #endif

@@ -1,6 +1,37 @@
+// ******************************************************************************
+// * License and Disclaimer                                                     *
+// *                                                                            *
+// * Copyright 2018 Simone Riggi																			          *
+// *																																	          *
+// * This file is part of MuonPortalGUI																          *
+// * MuonPortalGUI is free software: you can redistribute it and/or modify it   *
+// * under the terms of the GNU General Public License as published by          *
+// * the Free Software Foundation, either * version 3 of the License,           *
+// * or (at your option) any later version.                                     *
+// * MuonPortalGUI is distributed in the hope that it will be useful, but 			*
+// * WITHOUT ANY WARRANTY; without even the implied warranty of                 * 
+// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.                       *
+// * See the GNU General Public License for more details. You should            * 
+// * have received a copy of the GNU General Public License along with          * 
+// * MuonPortalGUI. If not, see http://www.gnu.org/licenses/.                   *
+// ******************************************************************************
+/**
+* @file TomographyRecTabMenu.cc
+* @class TomographyRecTabMenu
+* @brief Tomography imaging tab menu
+* 
+* @author S. Riggi
+* @date 25/04/2010
+*/
 #include <TomographyRecTabMenu.h>
 #include <Gui.h>
+#include <Logger.h>
 #include <Utilities.h>
+#include <VolumeRenderingViewer.h>
+#include <DownloaderThreadObj.h>
+#include <EMTomographyRecoThreadObj.h>
+#include <FOFThreadObj.h>
+#include <ACFAnalysisThreadObj.h>
 #include <QtGui>
 
 #include <QUdpSocket>
@@ -44,7 +75,8 @@
 
 
 using namespace std;
-using namespace MuonPortalNS;
+
+namespace MuonPortalNS {
 
 TomographyRecTabMenu::TomographyRecTabMenu(QWidget *parent){
  	
@@ -61,9 +93,6 @@ TomographyRecTabMenu::TomographyRecTabMenu(QWidget *parent){
 	fTomographyMainTabMenu = new QTabWidget(parent);
   fTomographyMainTabMenu->setObjectName(QString::fromUtf8("tab_TomographyMainTabMenu"));
   
-
-
-	
 	std::string initButton_imagepath= Gui::GUI_BASE_DIR + std::string("/share/initButton.png");
 	std::string runButton_imagepath= Gui::GUI_BASE_DIR + std::string("/share/redButton.png");
 	std::string stopButton_imagepath= Gui::GUI_BASE_DIR + std::string("/share/stopButtonImage.png");
@@ -3151,5 +3180,6 @@ void TomographyRecTabMenu::EnableACFStopButton(){
 void TomographyRecTabMenu::EnableClusteringStopButton(){
 	stopThreadButtonList_ClusteringRecoStatus[fCurrentScanIndex]->setEnabled(true);
 }
-		
+	
+}//close namespace	
 

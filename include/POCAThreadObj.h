@@ -1,10 +1,33 @@
+// ******************************************************************************
+// * License and Disclaimer                                                     *
+// *                                                                            *
+// * Copyright 2018 Simone Riggi																			          *
+// *																																	          *
+// * This file is part of MuonPortalGUI																          *
+// * MuonPortalGUI is free software: you can redistribute it and/or modify it   *
+// * under the terms of the GNU General Public License as published by          *
+// * the Free Software Foundation, either * version 3 of the License,           *
+// * or (at your option) any later version.                                     *
+// * MuonPortalGUI is distributed in the hope that it will be useful, but 			*
+// * WITHOUT ANY WARRANTY; without even the implied warranty of                 * 
+// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.                       *
+// * See the GNU General Public License for more details. You should            * 
+// * have received a copy of the GNU General Public License along with          * 
+// * MuonPortalGUI. If not, see http://www.gnu.org/licenses/.                   *
+// ******************************************************************************
+/**
+* @file POCAThreadObj.h
+* @class POCAThreadObj
+* @brief POCA algorithm processing thread
+* 
+* @author S. Riggi
+* @date 25/04/2010
+*/
 #ifndef POCAThreadObj_h
 #define POCAThreadObj_h 1
 
 #include <ConfigParser.h>
-
 #include <TASImageNew.h>
-//#include <MyTASImage.h>
 
 #include <QDialog>
 #include <QObject>
@@ -60,6 +83,7 @@ class QThread;
 class QStatusBar;
 class QSpacerItem;
 
+namespace MuonPortalNS {
 
 class POCAThreadObj: public QObject {
     
@@ -302,18 +326,13 @@ class POCAThreadObj: public QObject {
 		TASImageNew* RecImg_YFix[NMAXTOMSECTIONS];
 		TASImageNew* RecImg_ZFix[NMAXTOMSECTIONS];
 
-		/*
-		MyTASImage* RecImg_XFix[NMAXTOMSECTIONS];
-		MyTASImage* RecImg_YFix[NMAXTOMSECTIONS];
-		MyTASImage* RecImg_ZFix[NMAXTOMSECTIONS];
-		*/
-
 		static const int MAXRENDIMG=1000;
-		//MyTASImage* VolRendImg[MAXRENDIMG];
 		TASImageNew* VolRendImg[MAXRENDIMG];
 		TImagePalette* fTemperaturePalette;
 		
-};
+};//close class
+
+}//close namespace
 
 #endif 
 

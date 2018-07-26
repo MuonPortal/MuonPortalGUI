@@ -1,4 +1,32 @@
-#include "TASImageNew.h"
+// ******************************************************************************
+// * License and Disclaimer                                                     *
+// *                                                                            *
+// * Copyright 2018 Simone Riggi																			          *
+// *																																	          *
+// * This file is part of MuonPortalGUI																          *
+// * MuonPortalGUI is free software: you can redistribute it and/or modify it   *
+// * under the terms of the GNU General Public License as published by          *
+// * the Free Software Foundation, either * version 3 of the License,           *
+// * or (at your option) any later version.                                     *
+// * MuonPortalGUI is distributed in the hope that it will be useful, but 			*
+// * WITHOUT ANY WARRANTY; without even the implied warranty of                 * 
+// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.                       *
+// * See the GNU General Public License for more details. You should            * 
+// * have received a copy of the GNU General Public License along with          * 
+// * MuonPortalGUI. If not, see http://www.gnu.org/licenses/.                   *
+// ******************************************************************************
+
+/**
+* @file TASImageNew.cc
+* @class TASImageNew
+* @brief Define a TAS image
+*
+* @author S. Riggi
+* @date 23/03/2012
+*/
+
+
+#include <TASImageNew.h>
 
 #include "TASImagePlugin.h"
 #include "TROOT.h"
@@ -52,8 +80,11 @@ extern "C" {
 // auxiliary functions for general polygon filling
 #include "MyTASPolyUtils.c"
 
-ClassImp(TASImageNew)
 
+
+ClassImp(MuonPortalNS::TASImageNew)
+
+namespace MuonPortalNS {
 
 TASImageNew::TASImageNew() 
 	: TASImage() 
@@ -204,4 +235,6 @@ void TASImageNew::SetImage(const TVectorD &imageData, UInt_t width, TImagePalett
    SetImage(imageData.GetMatrixArray(), width,
             imageData.GetNoElements() / width, palette,isFixRange,min,max);
 }
+
+}//close namespace
 
