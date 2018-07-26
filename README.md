@@ -1,5 +1,5 @@
 <p align="left">
-  <img src="share/CaesarLogo.png" alt="Caesar source finder logo"/>
+  <img src="share/MuonPortalPic.png" alt="MuonPortal project logo"/>
 </p>
 
 # MuonPortalGUI
@@ -17,50 +17,51 @@ or consider including me (`S. Riggi, INAF - Osservatorio Astrofisico di Catania,
 as a co-author on your publications.
 
 ## **Status**
-This software is currently not actively maintained. Building with recent versions of GEANT4/ROOT/VTK/Qt may require fixing the Makefile.
+This software is currently not actively maintained. Building with recent versions of GEANT4/ROOT/VTK/Qt may require fixing the Makefile. The software was used with:
+* OS: Ubuntu 14.04/16.04, Centos 6
+* QT 4 (not tested with QT 5)
+* VTK 5 (not tested with VTK 6) 
+* ROOT 5, 6
+* GEANT 4.9.X
 
 ## **Installation**  
 
 ### **Prerequisites**
+Install the system libraries & tools (example for Ubuntu):
+* libphonon-dev libphonon4 phonon-backend-gstreamer
+* libafterimage-dev
+* unbuffer (sudo apt install expect)
+
 Install the project mandatory dependencies:  
 * ROOT [https://root.cern.ch/]
 * GEANT4 [https://geant4.web.cern.ch/] 
-* cfitsio [https://heasarc.gsfc.nasa.gov/fitsio/fitsio.html], to be built with multithread support (e.g. give --enable-reentrant option in configure)
-* protobuf [https://github.com/google/protobuf]
-* jsoncpp [https://github.com/open-source-parsers/jsoncpp]
-* python (>=2.7) [https://www.python.org/], install also these additional modules: pyfits, astropy
-* cmake (>=2.8) [https://cmake.org]  
-  
-Optional dependencies are:
-* MPICH [https://www.mpich.org/], needed when the build option ENABLE_MPI=ON        
-* OpenMP [http://www.openmp.org/], needed when the build option BUILD_WITH_OPENMP=ON    
-* GoogleTest [https://github.com/google/googletest], needed for unit testing when the build option ENABLE_TEST=ON   
-* Doxygen [www.doxygen.org/], needed to generate the API documentation   
+* VTK [https://www.vtk.org/] 
+* QT [https://www.qt.io], enable QVTKWidget build
+* QJson [https://github.com/flavio/qjson.git]    
+* MPI library: MPICH [https://www.mpich.org/] or OpenMPI [https://www.open-mpi.org/]
+* boost [http://www.boost.org/]
+* log4cxx [https://logging.apache.org/log4cxx/]
 
 Make sure you have set the following environment variables to the external library installation dirs 
-* ROOTSYS
-* OPENCV_DIR
-* R_DIR
-* BOOST_ROOT
-* LOG4CXX_ROOT
-* JSONCPP_ROOT
+* ROOTSYS: set to ROOT installation prefix
+* G4INSTALL: set to GEANT4 installation prefix
+* G4LIB: set to GEANT4 installed library path
+* VTK_INCDIR: set to VTK header path
+* VTK_LIBDIR: set to VTK libray path
+* LIBAFTERIMAGE_INCDIR: set to libAfterImage header path
+* MPI_DIR: set to MPI installation prefix
+* BOOST_ROOT: set to boost library installation prefix
+* LOG4CXX_DIR: set to log4cxx library installation prefix
+* QJSON_DIR: set to QJson installation prefix
 
-Add also the following paths to the PKG_CONFIG_PATH environment var: 
-* $LOG4CXX_ROOT/lib/pkgconfig  
-* $JSONCPP_ROOT/lib/pkgconfig
+NB: Modify Makefile CPPFLAGS and LDFLAGS in case the dependency tools cannot be found.
 
-CAESAR depends also on the wcstools and linterp libraries which are already provided in the external/ directory. 
-**NB: The provided wcslib was slightly modified with respect to the original release to avoid naming conflicts with the R package due to some #define macros used in WCS.**
-
-cmake should find all needed include dirs and libraries used to build the project.
-
-### **Build and install**
-To build and install the project:
+### **Build**
+To build the project:
 
 * Clone this repository into your local $SOURCE_DIR  
-  ```git clone https://github.com/simoneriggi/ska-dsh_lmc.git $SOURCE_DIR```
-* Create the build and install directories: $BUILD_DIR, $INSTALL_DIR  
-* In the build directory:  
-  ```cmake -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR -DENABLE_TEST=ON -DBUILD_WITH_OPENMP=ON -DENABLE_MPI=ON -DBUILD_APPS=ON $SOURCE_DIR```   
+  ```git clone https://github.com/MuonPortal/MuonPortalGUI.git $SOURCE_DIR```
+* In the project directory type:    
   ```make```  
-  ```make install```  
+
+Binaries will be placed in the bin/ directory.
