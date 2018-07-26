@@ -1,5 +1,5 @@
 <p align="left">
-  <img src="share/CaesarLogo.png" alt="Caesar source finder logo"/>
+  <img src="share/MuonPortalPic.png" alt="MuonPortal project logo"/>
 </p>
 
 # MuonPortalGUI
