@@ -340,13 +340,13 @@ $(SRCDIR_GUI)/moc_parserrunnable.cxx: $(QJSON_DIR)/include/qjson/parserrunnable.
 
 
 PRINTINFO: 
-	@echo 'Compiling $(SVN_REVISION_VERSION) trunk version on a $(LBITS) bit machine' \
-	@echo 'SRCDIR= $(SRCDIR)' \
-	@echo 'USER_SRCS= $(USER_SRCS)' \
-	@echo 'OBJS= $(OBJS)' \
-	@echo 'INCDIR_GUI= $(INCDIR_GUI)'\
-	@echo 'MOC_HEADERS= $(MOC_HEADERS)'\
-	@echo 'MOC_SOURCES= $(MOC_SOURCES)'\
+	@echo 'Compiling $(EXE) on a $(LBITS) bit machine' 
+	@echo 'SRCDIR= $(SRCDIR)' 
+	@echo 'USER_SRCS= $(USER_SRCS)'
+	@echo 'OBJS= $(OBJS)' 
+	@echo 'INCDIR_GUI= $(INCDIR_GUI)'
+	@echo 'MOC_HEADERS= $(MOC_HEADERS)'
+	@echo 'MOC_SOURCES= $(MOC_SOURCES)'
 	@echo 'MOC_OBJ= $(MOC_OBJ)'
 
 
@@ -433,7 +433,7 @@ clean:
 	- rm -f *.o $(OBJDIR)/*.o $(SRCDIR)/*.o $(BINDIR)/*.o
 	- rm -f *.so $(LIBDIR)/*.so
 	- rm -f $(BINDIR)/$(EXE) $(BINDIR)/$(VIEWER_EXE) $(BINDIR)/$(ADVANCEDVIEWER_EXE) $(BINDIR)/$(EMMLIMAGING_EXE) $(BINDIR)/$(POCAIMAGING_EXE) $(BINDIR)/$(FOFIMAGING_EXE) $(BINDIR)/$(ACFIMAGING_EXE) $(BINDIR)/$(DOWNLOADER_EXE)
-	- rm -f $(VIEWER_DICT)
+	- rm -f ViewerDict.cc ViewerDict_rdict.pcm
 	- rm -f $(MOC_SOURCES)
 	- rm -f *.ps core Make-depend
 
