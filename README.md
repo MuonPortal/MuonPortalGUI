@@ -61,3 +61,5 @@ To build the project:
   ```git clone https://github.com/MuonPortal/MuonPortalGUI.git $SOURCE_DIR```
 * In the project directory type:    
   ```make```  
+
+Binaries will be placed in the bin/ directory.
