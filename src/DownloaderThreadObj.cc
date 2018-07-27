@@ -128,7 +128,7 @@ bool DownloaderThreadObj::init(){
 		fCommand= std::string("/usr/bin/rsync -av --ignore-times --progress ") + fRemoteUserName + std::string("@") + fRemoteHostName + std::string(":") + fInputFileName + std::string(" ") + outputFileName + std::string(" | unbuffer -p grep -o \"[0-9]*%\"");
 	}
 
-	cout<<"DownloaderThreadObj::init(): INFO: command= "<<fCommand<<endl;	
+	DEBUG_LOG("command= "<<fCommand);	
 
 	return true;
 	
@@ -154,7 +154,7 @@ void DownloaderThreadObj::process(){
 
 
 	//## Transfer data file from remote host
-	cout<<"DownloaderThreadObj::process(): INFO: Starting to transfer data file "<<fInputFileName.c_str()<<endl;
+	INFO_LOG("Starting to transfer data file "<<fInputFileName.c_str()<<" ...");
 	
 	
 	int attemptCounter= 0;
@@ -172,7 +172,7 @@ void DownloaderThreadObj::process(){
 		fp = popen(fCommand.c_str(),"r");
   	if (fp == NULL) {
 			status= 1;
-    	cerr<<"DownloaderThreadObj::process(): ERROR: Download failed ["<<attemptCounter<<" attempt]...retry!"<<endl;
+    	WARN_LOG("Download failed ["<<attemptCounter<<" attempt], retrying...");
 			QString msg = QString("--> Download failed [%1 attempt] ...").arg(attemptCounter);
 			emit(statusMessage(msg));
 
@@ -196,7 +196,7 @@ void DownloaderThreadObj::process(){
 			progressPercentage= atoi(path);
 			isFileExisting= false;
 
-    	cout<<"DownloaderThreadObj::process(): INFO: progressPercentage= "<<progressPercentage<<endl;
+    	DEBUG_LOG("progressPercentage= "<<progressPercentage);
 			if(progressPercentage>=0 && progressPercentage<=100) {
 				emit(downloadProgress(progressPercentage));
 				QString msg = QString("--> Download in progress [%1] ...").arg(progressPercentage);
@@ -219,12 +219,12 @@ void DownloaderThreadObj::process(){
 
 		//## Check status
 		if(progressPercentage==100){
-			cout<<"DownloaderThreadObj::process(): INFO: Download completed!"<<endl;	
+			INFO_LOG("Download completed");
 			status= 0;	
 			break;
 		}
 		else{
-			cerr<<"DownloaderThreadObj::process(): INFO: Cannot get full percentage download...retry!"<<endl;
+			WARN_LOG("Cannot get full percentage download, retrying...");
 			progressPercentage= 0;
 			QString msg = QString("Download troubles (cannot get full percentage)...retry!");
 			emit(statusMessage(msg));
@@ -243,9 +243,9 @@ void DownloaderThreadObj::process(){
 
 
 	if(status==0){
-		cout<<"DownloaderThreadObj::process(): INFO: Data transfer succesful!"<<endl;
+		INFO_LOG("Data transfer completed with success!");
 		emit finished();  
-		QString msg = QString("--> Download terminated with success!!");
+		QString msg = QString("--> Download terminated with success!");
 		emit(statusMessage(msg));
 
 		fLogMessage.status= eFinished;
@@ -257,7 +257,7 @@ void DownloaderThreadObj::process(){
 		emit finishedMessage(logMessage);
 	}
 	else{
-		cerr<<"DownloaderThreadObj::process(): ERROR: Cannot download data file from remote host (check connection/file paths?)...exit!"<<endl;
+		ERROR_LOG("Cannot download data file from remote host (check connection/file paths?)...exit!");
 		QString msg = QString("Download failed ... check network connection/file paths!");
 		emit(statusMessage(msg));
 		emit(error());
@@ -330,6 +330,6 @@ bool DownloaderThreadObj::sender(QString message)
 	
 	return status;
 
-}//close DownloaderThreadObj::sender()
+}//close sender()
 
 }//close namespace

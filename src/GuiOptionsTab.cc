@@ -16,67 +16,60 @@
 // * MuonPortalGUI. If not, see http://www.gnu.org/licenses/.                   *
 // ******************************************************************************
 /**
-* @file TabMenu.h
-* @class TabMenu
-* @brief GUI tab menu
+* @file GuiOptionsTab.cc
+* @class GuiOptionsTab
+* @brief GUI option tab menu
 * 
 * @author S. Riggi
 * @date 25/04/2010
 */
-#ifndef TAB_MENU_H
-#define TAB_MENU_H
+#include <GuiOptionsTab.h>
+#include <Gui.h>
+#include <Logger.h>
 
-#include <QDialog>
-#include <QObject>
+#include <QtGui>
+#include <TString.h>
 
+#include <iostream>
 
-class QDialogButtonBox;
-class QFileInfo;
-class QTabWidget;
-class QCheckBox;
-class QGroupBox;
-class QPushButton;
-class QTextEdit;
-class QComboBox;
+using namespace std;
 
 namespace MuonPortalNS {
 
-class ContainerTab;
-class GuiOptionsTab;
-class POCATab;
-class EMLLTab;
-class ACFTab;
-class ClusteringTab;
+GuiOptionsTab::GuiOptionsTab(QWidget *parent)
+     : QWidget(parent)
+{
 
-class TabMenu : public QWidget {
-     
-	Q_OBJECT
+	QLabel* label_InfoSeparation = new QLabel("Main options");
+	label_InfoSeparation->setFrameStyle(QFrame::HLine | QFrame::Raised);
+	label_InfoSeparation->setStyleSheet("QLabel { color : gray; }");
 
- 	public:
+	checkBox_enableSounds= new QCheckBox("Enable sounds?");
+	checkBox_enableSounds->setObjectName(QString::fromUtf8("checkBox_enableSounds"));
+	checkBox_enableSounds->setChecked(false);
 
-  	TabMenu(QWidget *parent = 0);
+	//## Define object actions
+	//...
 
-	public slots:
-		void SetTabMenuOptions();
+	//## Set object layout
+	QHBoxLayout* OptionFrameLayout= new QHBoxLayout;
+	OptionFrameLayout->addWidget(checkBox_enableSounds);
+	OptionFrameLayout->addStretch(1);
+	
+	QVBoxLayout* mainLayout = new QVBoxLayout;
+	mainLayout->addLayout(OptionFrameLayout);
+	mainLayout->addStretch(1);
+	setLayout(mainLayout);
 
-	public:
+}//close constructor
 
-		
-	private:
 
-		QTabWidget* fTabMenu;
-		
-		ContainerTab* fContainerTab;
-		POCATab* fPOCATab;
-		EMLLTab* fEMLLTab;
-		ACFTab* fACFTab;
-		ClusteringTab* fClusteringTab;
-		GuiOptionsTab* fGuiOptionsTab;
+void GuiOptionsTab::SetOptions(){
 
-		QPushButton* pushButton_Init;	
-		
-};//close class TabMenu
+	//## Pass gui options to parser
+	Gui::fConfigParser->fEnableSounds= checkBox_enableSounds->isChecked();
+	
+}//close SetOptions()
+
 
 }//close namespace
-
-#endif

@@ -30,6 +30,7 @@
 #define Utilities_h 1
 
 #include <AnalysisConsts.h>
+#include <Logger.h>
 
 #include <cstdlib>
 #include <iomanip>
@@ -228,7 +229,7 @@ class Utilities{
 
 			//check
 			if(!in.good()) {
-    		cerr<<"GetNLinesInAsciiFile(): ERROR: Cannot open file stream ...exit!"<<endl;
+    		ERROR_LOG("Cannot open file stream ...exit!");
 				exit(1);
   		}
 		
@@ -240,7 +241,6 @@ class Utilities{
       while(getline(in,s)) {
       	n++;
       }
-      cout << n << endl;
 
 			//in.close();
 
@@ -335,14 +335,13 @@ class Utilities{
 			}
 
 			if(ip_address=="0.0.0.0" || ip_address==""){
-				cerr<<"Utilities::GetIpAddress(): ERROR: Cannot determine ip address of current host...exit!"<<endl;
+				ERROR_LOG("Cannot determine ip address of current host...exit!");
 				exit(1);	
 			}
-
-			
+	
  			close(fd);
 
- 			cout<<"Utilities::GetIpAddress(): INFO: ip_address: "<<ip_address<<endl;
+ 			DEBUG_LOG("ip_address: "<<ip_address);
 
  			return ip_address;
 

@@ -353,7 +353,7 @@ bool FOFThreadObj::Run(){
   fNClusterGroups = kdFoF(kd,fEps); //mb:fEps è un float non inizializzato se non dai l'opzione -e ---> linking lenght
   INFO_LOG("#"<<fNClusterGroups<<" clusters found ...");
     
-	if (bVerbose) printf("Number of initial groups:%d\n",nGroup);  //mb:qui no
+	if (bVerbose) DEBUG_LOG("Number of initial groups: "<< nGroup);  //mb:qui no
 	fNClusterGroups = kdTooSmall(kd,fMinNPts);
   INFO_LOG("#"<<fNClusterGroups<<" clusters found after kdTooSmall stage...");
   
@@ -958,26 +958,23 @@ void FOFThreadObj::kdReadMuons(KD kd, FILE *fp, int bPoca){
 	struct dump h; //un solo campo: int npoca-> numero di eventi poca
 	struct poca_event pe_p; //id_ev, 3 coordinate, theta, thetaQ e energy
 
-	 
   h.npoca= contaRighe(fp);     rewind(fp);
   //mb: aggiunto
   kd->bPoca= bPoca; //aggiunto!
 	kd->nPoca = h.npoca;
-  printf("h.npoca: %d\n", h.npoca);
+  DEBUG_LOG("h.npoca: "<<h.npoca);
   
 	kd->nActive = 0;
 	if (bPoca) kd->nActive += kd->nPoca; //nActive ha come valore il numero di eventi nel file
-	/*
-	 ** Allocate events.
-	 */
+	
+	//Allocate events.
 	kd->p = (POCA *)malloc(kd->nActive*sizeof(POCA)); //sto allocando la memoria per tutti gli eventi
 	assert(kd->p != NULL);
-	/*
-	 ** Read Stuff!
-
-	printf("Read from FLY done %d %d %d\n", h.nsph, h.ndark, h.nstar);
+	
+	//Read Stuff!
+	//DEBUG_LOG("Read from FLY done: "<<h.nsph<<", "<<h.ndark<<", "<<h.nstar);
 	fflush(stdout);
-	*/
+	
 	nCnt = 0;
     
 	//for (i=0;i<h.npoca;++i) { //for sostituito con il while e fread sostituita con fscanf
@@ -985,7 +982,7 @@ void FOFThreadObj::kdReadMuons(KD kd, FILE *fp, int bPoca){
     //while(fscanf(fp, "%d%f%f%f%f%f%f", &pe_p.id_event, &pe_p.r[0], &pe_p.r[1],&pe_p.r[2], &pe_p.theta,&pe_p.thetaQ, &pe_p.energy)>0){
     while(fscanf(fp, "%d%f%f%f%f%f", &pe_p.id_event, &pe_p.r[0], &pe_p.r[1],&pe_p.r[2], &pe_p.theta,&pe_p.thetaQ)>0){
       
-			printf("--> %d\t%f\t%f\t%f\t%f\n", pe_p.id_event,pe_p.r[0], pe_p.r[1],pe_p.r[2],pe_p.theta);
+			DEBUG_LOG("pe_p.id_event="<<pe_p.id_event<<", pe_p.r[0]="<<pe_p.r[0]<<", pe_p.r[1]="<<pe_p.r[1]<<", pe_p.r[2]="<<pe_p.r[2]<<", pe_p.theta="<<pe_p.theta);
  
 		//fread(&pe_p,sizeof(struct poca_event),1,fp);
 		if (bPoca) {
@@ -1004,9 +1001,10 @@ void FOFThreadObj::kdReadMuons(KD kd, FILE *fp, int bPoca){
     }
 
 	rewind(fp);
-  fprintf(stderr, "nCnt final=%d\n", nCnt);
+	DEBUG_LOG("nCnt final="<<nCnt);
+  //fprintf(stderr, "nCnt final=%d\n", nCnt);
 
-}//FOFThreadObj::kdReadMuons()
+}//close FOFThreadObj::kdReadMuons()
 
 
 void FOFThreadObj::kdSelect(KD kd,int d,int k,int l,int r){
@@ -1030,13 +1028,13 @@ void FOFThreadObj::kdSelect(KD kd,int d,int k,int l,int r){
 			p[i] = p[j];
 			p[j] = t;
 			if (j <= i) break;
-			}
+		}
 		p[j] = p[i];
 		p[i] = p[r];
 		p[r] = t;
 		if (i >= k) r = i - 1;
 		if (i <= k) l = i + 1;
-		}
+	}
 	
 }//close FOFThreadObj::kdSelect
 
@@ -1045,9 +1043,7 @@ void FOFThreadObj::kdCombine(KDN *p1,KDN *p2,KDN *pOut){
 
 	int j;
 
-	/*
-	 ** Combine the bounds.
-	 */
+	//Combine the bounds
 	for (j=0;j<3;++j) {
 		if (p2->bnd.fMin[j] < p1->bnd.fMin[j])
 			pOut->bnd.fMin[j] = p2->bnd.fMin[j];
@@ -1057,9 +1053,9 @@ void FOFThreadObj::kdCombine(KDN *p1,KDN *p2,KDN *pOut){
 			pOut->bnd.fMax[j] = p2->bnd.fMax[j];
 		else
 			pOut->bnd.fMax[j] = p1->bnd.fMax[j];
-		}
+	}//end loop
 
-}//close FOFThreadObj::kdCombine()
+}//close kdCombine()
 
 
 void FOFThreadObj::kdUpPass(KD kd,int iCell){
@@ -1074,28 +1070,28 @@ void FOFThreadObj::kdUpPass(KD kd,int iCell){
 		kdUpPass(kd,l);
 		kdUpPass(kd,u);
 		kdCombine(&c[l],&c[u],&c[iCell]);
-		}
+	}
 	else {
 		l = c[iCell].pLower;
 		u = c[iCell].pUpper;
 		for (j=0;j<3;++j) {
 			c[iCell].bnd.fMin[j] = kd->p[u].r[j];
 			c[iCell].bnd.fMax[j] = kd->p[u].r[j];
-			}
+		}
 		for (pj=l;pj<u;++pj) {
 			for (j=0;j<3;++j) {
 				if (kd->p[pj].r[j] < c[iCell].bnd.fMin[j])
 					c[iCell].bnd.fMin[j] = kd->p[pj].r[j];
 				if (kd->p[pj].r[j] > c[iCell].bnd.fMax[j])
 					c[iCell].bnd.fMax[j] = kd->p[pj].r[j];
-				}
 			}
 		}
+	}
 	
-}//close FOFThreadObj::kdUpPass()
+}//close kdUpPass()
 
-void FOFThreadObj::kdBuildTree(KD kd){
-
+void FOFThreadObj::kdBuildTree(KD kd)
+{
 	int l,n,i,d,m,j,diff;
 	KDN *c;
 	BND bnd;
@@ -1103,28 +1099,27 @@ void FOFThreadObj::kdBuildTree(KD kd){
 	n = kd->nActive;
 	kd->nLevels = 1;
 	l = 1;
-    //printf("Valore di nBucket: %d\n", kd->nBucket); 16
+    
 	while (n > kd->nBucket) { //finchè n=nEvPoca>16 divide n per due e moltiplica l per 2 e incrementa kd->nLevels di uno
-        n = n>>1;//mb: /2
+  	n = n>>1;//mb: /2
 		l = l<<1; //mb:*2
-		++kd->nLevels;
-        
-		}
+		++kd->nLevels;  
+	}
     
 	kd->nSplit = l; 
 	kd->nNodes = l<<1;
 	if (kd->kdNodes != NULL) free(kd->kdNodes);
 	kd->kdNodes = (KDN *)malloc(kd->nNodes*sizeof(KDN)); //mb:alloco memoria per kdNodes (n. elementi pari a nNodes=l*2*sizeof(KDN)
 	assert(kd->kdNodes != NULL);
-	/*
-	 ** Calculate Bounds.
-	 */
-    printf("calcolo Bounds\n");
+	
+	//## Calculate Bounds.
+  INFO_LOG("Computing bounds ...");
 	for (j=0;j<3;++j) {
 		bnd.fMin[j] = kd->p[0].r[j];
 		bnd.fMax[j] = kd->p[0].r[j];
-		}
-    printf("valore di nActive: %d\n", kd->nActive);
+	}
+   
+	DEBUG_LOG("nActive: "<<kd->nActive);
 	for (i=1;i<kd->nActive;++i) { //mb:sto costruendo i bounds ciclando su tutti gli eventi poca e andando a guardare tutte le coordinate
         //printf("ciclo %d\n", i);
 		for (j=0;j<3;++j) {
@@ -1134,10 +1129,9 @@ void FOFThreadObj::kdBuildTree(KD kd){
 				bnd.fMax[j] = kd->p[i].r[j];
 			}
 		}
-	/*
-	 ** Set up ROOT node
-	 */
-    printf("setUp root node\n");
+	
+	//## Set up ROOT node
+	DEBUG_LOG("setUp root node");
 	c = kd->kdNodes;
 	c[fROOT].pLower = 0;
 	c[fROOT].pUpper = kd->nActive-1;
@@ -1179,7 +1173,7 @@ void FOFThreadObj::kdBuildTree(KD kd){
 			}
 		}
 	kdUpPass(kd,fROOT);
-    printf("KdBuild ended\n");
+  DEBUG_LOG("KdBuild ended");
 	
 }//close FOFThreadObj::kdBuildTree()
 
@@ -1306,13 +1300,11 @@ int FOFThreadObj::kdFoF(KD kd,float fEps) //fEps--> linking lenght
     //printf("iGroup: %d\n", iGroup);
     //printf("\n\n\n\n");
     
-    
-    printf("\n\n\n*****FINE FOF\n\n\n");
-    for (pn=0;pn<kd->nActive;++pn) {
+    //printf("\n\n\n*****FINE FOF\n\n\n");
+
+    //for (pn=0;pn<kd->nActive;++pn) {
         //printf("p[%d].iGroup: %d\n",pn, p[pn].iGroup);
-    
-    }
-    
+    //}
     
     
 	free(Fifo);
@@ -1340,9 +1332,8 @@ int FOFThreadObj::kdTooSmall(KD kd,int nMembers)
 			pnMembers[i] = 0;
 			}
 		}
-	/*
-	 ** Create a remapping!
-	 */
+
+	//## Create a remapping!
 	pMap[0] = 0;
 	nGroup = 1;
 	for (i=1;i<kd->nGroup;++i) {
@@ -1356,15 +1347,13 @@ int FOFThreadObj::kdTooSmall(KD kd,int nMembers)
 			}
 		}
     
-    printf("kdTooSMall: nGroup after remapping: %d\n", nGroup); //4?
+    DEBUG_LOG("kdTooSMall: nGroup after remapping: "<<nGroup); //4?
  //   for (pi=0;pi<kd->nGroup;++pi) {
    //     printf("pMap[%d]= %d\n", pi, pMap[pi]); //i gruppi sono 4, ma i valori di pMAp sono sempre=0!!! perchè???
     
   //  }
     
-	/*
-	 ** Remap the groups.
-	 */
+	//## Remap the groups.
 	for (pi=0;pi<kd->nActive;++pi) {
 		kd->p[pi].iGroup = pMap[kd->p[pi].iGroup];
        // printf("p[%d].iGroup in KDtooSMALL: %d\n",pi, kd->p[pi].iGroup);
@@ -1401,8 +1390,6 @@ void FOFThreadObj::kdOutGroup(KD kd,char *pszFile,FILE *ip)
 
 	fp = fopen(pszFile,"w");
 	assert(fp != NULL);
-    
-   
         
 	iCnt = 0;
 	
@@ -1413,7 +1400,7 @@ void FOFThreadObj::kdOutGroup(KD kd,char *pszFile,FILE *ip)
 				
 		if(fscanf(ip, "%i %f %f %f %f %f", &pe_p.id_event, &pe_p.r[0], &pe_p.r[1],&pe_p.r[2], &pe_p.theta,&pe_p.thetaQ)>0){
     	fprintf(fp, "%f\t%f\t%f\t%f\n", pe_p.r[0], pe_p.r[1],pe_p.r[2],pe_p.theta);
-			printf("--> %d\t%f\t%f\t%f\t%f\n", kd->p[counter].iGroup,pe_p.r[0], pe_p.r[1],pe_p.r[2],pe_p.theta);
+			//printf("--> %d\t%f\t%f\t%f\t%f\n", kd->p[counter].iGroup,pe_p.r[0], pe_p.r[1],pe_p.r[2],pe_p.theta);
 		}
 
 	}

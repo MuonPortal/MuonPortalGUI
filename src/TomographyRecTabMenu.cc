@@ -515,26 +515,28 @@ TomographyRecTabMenu::TomographyRecTabMenu(QWidget *parent){
 		pushButtonList_ClusteringViewer.push_back(pushButtonList_ClusteringVolRendering[i]);
 
 		
-		//mMediaObject_POCAReco[i] = new Phonon::MediaObject(this);
-		//mMediaObject_POCAReco[i]->setCurrentSource(Phonon::MediaSource(alarm_soundpath.c_str()));
-		//mAudioOutput_POCAReco[i] = new Phonon::AudioOutput(Phonon::MusicCategory, this);
-		//Phonon::createPath(mMediaObject_POCAReco[i], mAudioOutput_POCAReco[i]);
+		if(Gui::fConfigParser->fEnableSounds){
+			mMediaObject_POCAReco[i] = new Phonon::MediaObject(this);
+			mMediaObject_POCAReco[i]->setCurrentSource(Phonon::MediaSource(alarm_soundpath.c_str()));
+			mAudioOutput_POCAReco[i] = new Phonon::AudioOutput(Phonon::MusicCategory, this);
+			Phonon::createPath(mMediaObject_POCAReco[i], mAudioOutput_POCAReco[i]);
 
-		//mMediaObject_LLReco[i] = new Phonon::MediaObject(this);
-		//mMediaObject_LLReco[i]->setCurrentSource(Phonon::MediaSource(alarm_soundpath.c_str()));
-		//mAudioOutput_LLReco[i] = new Phonon::AudioOutput(Phonon::MusicCategory, this);
-		//Phonon::createPath(mMediaObject_LLReco[i], mAudioOutput_LLReco[i]);
+			mMediaObject_LLReco[i] = new Phonon::MediaObject(this);
+			mMediaObject_LLReco[i]->setCurrentSource(Phonon::MediaSource(alarm_soundpath.c_str()));
+			mAudioOutput_LLReco[i] = new Phonon::AudioOutput(Phonon::MusicCategory, this);
+			Phonon::createPath(mMediaObject_LLReco[i], mAudioOutput_LLReco[i]);
 
-		//mMediaObject_ClusteringReco[i] = new Phonon::MediaObject(this);
-		//mMediaObject_ClusteringReco[i]->setCurrentSource(Phonon::MediaSource(alarm_soundpath.c_str()));
-		//mAudioOutput_ClusteringReco[i] = new Phonon::AudioOutput(Phonon::MusicCategory, this);
-		//Phonon::createPath(mMediaObject_ClusteringReco[i], mAudioOutput_ClusteringReco[i]);
+			mMediaObject_ClusteringReco[i] = new Phonon::MediaObject(this);
+			mMediaObject_ClusteringReco[i]->setCurrentSource(Phonon::MediaSource(alarm_soundpath.c_str()));
+			mAudioOutput_ClusteringReco[i] = new Phonon::AudioOutput(Phonon::MusicCategory, this);
+			Phonon::createPath(mMediaObject_ClusteringReco[i], mAudioOutput_ClusteringReco[i]);
 
-		//mMediaObject_ACFReco[i] = new Phonon::MediaObject(this);
-		//mMediaObject_ACFReco[i]->setCurrentSource(Phonon::MediaSource(alarm_soundpath.c_str()));
-		//mAudioOutput_ACFReco[i] = new Phonon::AudioOutput(Phonon::MusicCategory, this);
-		//Phonon::createPath(mMediaObject_ACFReco[i], mAudioOutput_ACFReco[i]);
-		
+			mMediaObject_ACFReco[i] = new Phonon::MediaObject(this);
+			mMediaObject_ACFReco[i]->setCurrentSource(Phonon::MediaSource(alarm_soundpath.c_str()));
+			mAudioOutput_ACFReco[i] = new Phonon::AudioOutput(Phonon::MusicCategory, this);
+			Phonon::createPath(mMediaObject_ACFReco[i], mAudioOutput_ACFReco[i]);
+		}//close if
+
 	}//end loop
 		
 	
@@ -693,7 +695,7 @@ void TomographyRecTabMenu::downloadStart(QString msg){
 	QVariantList result = parser.parse(data, &ok).toList();
 	
 	if(!ok){
-		cerr<<"TomographyRecTabMenu::downloadStart(). ERROR: Cannot parse JSON string message...exit!"<<endl;
+		ERROR_LOG("Cannot parse JSON string message...exit!");
 		return;
 	}
 	
@@ -731,7 +733,7 @@ void TomographyRecTabMenu::downloadStart(QString msg){
 		guiKey= (map.value("guiKey").toString()).toStdString();
 	}
 
-	cout<<"TomographyRecTabMenu::downloadStart(): INFO: inputFileName="<<inputFileName<<" jobDirName="<<jobDirName<<"  outputFileName="<<outputFileName<<"  hostName="<<hostName<<"  userName="<<userName<<"  portNo="<<portNo<<"  guihostName="<<guihostName<<"  guiportNo="<<guiportNo<<"  guiKey="<<guiKey<<"  isLocalDownload="<<isLocalDownload<<"  scanId="<<scanId<<"  containerId="<<containerId<<"  timeStamp="<<timeStamp<<endl;
+	DEBUG_LOG("inputFileName="<<inputFileName<<" jobDirName="<<jobDirName<<"  outputFileName="<<outputFileName<<"  hostName="<<hostName<<"  userName="<<userName<<"  portNo="<<portNo<<"  guihostName="<<guihostName<<"  guiportNo="<<guiportNo<<"  guiKey="<<guiKey<<"  isLocalDownload="<<isLocalDownload<<"  scanId="<<scanId<<"  containerId="<<containerId<<"  timeStamp="<<timeStamp);
 	
 	
 	//## Form script name
@@ -740,7 +742,7 @@ void TomographyRecTabMenu::downloadStart(QString msg){
 
 	QFileInfo scriptFileInfo(scriptName.c_str());
 	if(!scriptFileInfo.exists()){
-		cerr<<"TomographyRecTabMenu::downloadStart(): ERROR: Downloader script file does not exists...exit!"<<endl;
+		ERROR_LOG("Downloader script file does not exists...exit!");
 		return;
 	}	
 
@@ -771,7 +773,7 @@ void TomographyRecTabMenu::downloadStart(QString msg){
 	bool process_status= QProcess::startDetached(shell_path, args);	
 		
 	if(!process_status){
-		cerr<<"TomographyRecTabMenu::downloadStart(): ERROR: Cannot start downloader process...exit!"<<endl;
+		ERROR_LOG("Cannot start downloader process...exit!");
 		return;
 	}
 	
@@ -790,7 +792,7 @@ void TomographyRecTabMenu::EMMLStart(QString msg){
 	QVariantList result = parser.parse(data, &ok).toList();
 	
 	if(!ok){
-		cerr<<"TomographyRecTabMenu::EMMLStart(). ERROR: Cannot parse JSON string message...exit!"<<endl;
+		ERROR_LOG("Cannot parse JSON string message...exit!");
 		return;
 	}
 	
@@ -822,27 +824,23 @@ void TomographyRecTabMenu::EMMLStart(QString msg){
 	}
 
 		 
-	cout<<"TomographyRecTabMenu::EMMLStart(): INFO: inputFileName="<<inputFileName<<" jobDirName="<<jobDirName<<"  outputFileName="<<outputFileName<<"  guihostName="<<guihostName<<"  guiportNo="<<guiportNo<<"  guiKey="<<guiKey<<"  scanId="<<scanId<<"  containerId="<<containerId<<"  timeStamp="<<timeStamp<<endl;
+	DEBUG_LOG("inputFileName="<<inputFileName<<" jobDirName="<<jobDirName<<"  outputFileName="<<outputFileName<<"  guihostName="<<guihostName<<"  guiportNo="<<guiportNo<<"  guiKey="<<guiKey<<"  scanId="<<scanId<<"  containerId="<<containerId<<"  timeStamp="<<timeStamp);
 	
 	//## Copy config file into the output job directory
 	std::string configFileName= Gui::GUI_CONFIG_DIR + std::string("/EMMLConfig.cfg");
 
 	if(fRunExecMode==eLocalInteractive || fRunExecMode==eLocalBatch){
-		
 		std::string cpProcExe= Form("cp %s %s",configFileName.c_str(),jobDirName.c_str());
 		Utilities::ExecSystemCommand(cpProcExe.c_str());
-		cout<<"TomographyRecTabMenu::POCAStart(): INFO: cpProcExe: "<<cpProcExe<<endl;
-
+		DEBUG_LOG("cpProcExe: "<<cpProcExe);
 	}
 	else if(fRunExecMode==eRemoteBatch){//remote copy
-	
 		std::string scpProcExe= Form("scp %s %s@%s:%s",configFileName.c_str(),Gui::SEI_USERNAME.c_str(),Gui::SEI_HOSTNAME.c_str(),jobDirName.c_str());
 		Utilities::ExecSystemCommand(scpProcExe.c_str());
-		cout<<"TomographyRecTabMenu::EMMLStart(): INFO: scpProcExe: "<<scpProcExe<<endl;
-
+		DEBUG_LOG("scpProcExe: "<<scpProcExe);
 	}
 	else{
-		cerr<<"TomographyRecTabMenu::EMMLStart(): INFO: Invalid run option ("<<fRunMode<<") ...exit!"<<endl;
+		ERROR_LOG("Invalid run option ("<<fRunMode<<") ...exit!");
 		return;
 	}
 
@@ -852,7 +850,7 @@ void TomographyRecTabMenu::EMMLStart(QString msg){
 	outputFileName_EMML= jobDirName + std::string("/EMMLOutput_") + Utilities::GetBaseFileNameNoPath(outputFileName) + std::string(".root");
 	configFileName_EMML= jobDirName + std::string("/EMMLConfig.cfg");
 
-	cout<<"TomographyRecTabMenu::EMMLStart(): INFO: inputFileName_EMML="<<inputFileName_EMML<<"  outputFileName_EMML="<<outputFileName_EMML<<"  configFileName_EMML="<<configFileName_EMML<<endl;
+	DEBUG_LOG("inputFileName_EMML="<<inputFileName_EMML<<"  outputFileName_EMML="<<outputFileName_EMML<<"  configFileName_EMML="<<configFileName_EMML);
 
 	//Form script name
 	std::string scriptName= Gui::GUI_SCRIPT_DIR + std::string("/EMMLReconstructorSubmitter.sh");
@@ -860,7 +858,7 @@ void TomographyRecTabMenu::EMMLStart(QString msg){
 	
 	QFileInfo scriptFileInfo(scriptName.c_str());
 	if(!scriptFileInfo.exists()){
-		cerr<<"TomographyRecTabMenu::EMMLStart(): ERROR: EMML submitter script file does not exists...exit!"<<endl;
+		ERROR_LOG("EMML submitter script file does not exists...exit!");
 		return;
 	}	
 
@@ -879,7 +877,6 @@ void TomographyRecTabMenu::EMMLStart(QString msg){
 	std::string mpiVersionArg= "--useMPIVersion";
 	std::string nprocArg= "--nprocMPI=2";
 
-		
 
 	QStringList args;
   args << scriptName.c_str() << inputFileArg.c_str() << outputFileArg.c_str() << configFileArg.c_str() << guiHostNameArg.c_str() << guiPortNoArg.c_str() << guiKeyArg.c_str() << scanIdArg.c_str() << containerIdArg.c_str() << timeStampArg.c_str() << localRunArg.c_str() << mpiVersionArg.c_str() << nprocArg.c_str();
@@ -890,12 +887,11 @@ void TomographyRecTabMenu::EMMLStart(QString msg){
 	bool process_status= QProcess::startDetached(shell_path, args);	
 		
 	if(!process_status){
-		cerr<<"TomographyRecTabMenu::EMMLStart(): ERROR: Cannot start EMMLStart process...exit!"<<endl;
+		ERROR_LOG("Cannot start EMMLStart process...exit!");
 		return;
 	}
 	
-
-}//close TomographyRecTabMenu::EMMLStart()
+}//close EMMLStart()
 
 
 void TomographyRecTabMenu::POCAStart(QString msg){
@@ -909,7 +905,7 @@ void TomographyRecTabMenu::POCAStart(QString msg){
 	QVariantList result = parser.parse(data, &ok).toList();
 	
 	if(!ok){
-		cerr<<"TomographyRecTabMenu::POCAStart(). ERROR: Cannot parse JSON string message...exit!"<<endl;
+		ERROR_LOG("Cannot parse JSON string message...exit!");
 		return;
 	}
 	
@@ -941,27 +937,23 @@ void TomographyRecTabMenu::POCAStart(QString msg){
 	}
 
 		 
-	cout<<"TomographyRecTabMenu::POCAStart(): INFO: inputFileName="<<inputFileName<<" jobDirName="<<jobDirName<<"  outputFileName="<<outputFileName<<"  guihostName="<<guihostName<<"  guiportNo="<<guiportNo<<"  guiKey="<<guiKey<<"  scanId="<<scanId<<"  containerId="<<containerId<<"  timeStamp="<<timeStamp<<endl;
+	DEBUG_LOG("inputFileName="<<inputFileName<<" jobDirName="<<jobDirName<<"  outputFileName="<<outputFileName<<"  guihostName="<<guihostName<<"  guiportNo="<<guiportNo<<"  guiKey="<<guiKey<<"  scanId="<<scanId<<"  containerId="<<containerId<<"  timeStamp="<<timeStamp);
 	
 	//## Copy config file into the output job directory
 	std::string configFileName= Gui::GUI_CONFIG_DIR + std::string("/POCAConfig.cfg");
 
 	if(fRunExecMode==eLocalInteractive || fRunExecMode==eLocalBatch){
-		
 		std::string cpProcExe= Form("cp %s %s",configFileName.c_str(),jobDirName.c_str());
 		Utilities::ExecSystemCommand(cpProcExe.c_str());
-		cout<<"TomographyRecTabMenu::POCAStart(): INFO: cpProcExe: "<<cpProcExe<<endl;
-
+		DEBUG_LOG("cpProcExe: "<<cpProcExe);
 	}
 	else if(fRunExecMode==eRemoteBatch){//remote copy
-	
 		std::string scpProcExe= Form("scp %s %s@%s:%s",configFileName.c_str(),Gui::SEI_USERNAME.c_str(),Gui::SEI_HOSTNAME.c_str(),jobDirName.c_str());
 		Utilities::ExecSystemCommand(scpProcExe.c_str());
-		cout<<"TomographyRecTabMenu::POCAStart(): INFO: scpProcExe: "<<scpProcExe<<endl;
-
+		DEBUG_LOG("scpProcExe: "<<scpProcExe);
 	}
 	else{
-		cerr<<"TomographyRecTabMenu::POCAStart(): INFO: Invalid run option ("<<fRunMode<<") ...exit!"<<endl;
+		ERROR_LOG("Invalid run option ("<<fRunMode<<") ...exit!");
 		return;
 	}
 
@@ -971,7 +963,7 @@ void TomographyRecTabMenu::POCAStart(QString msg){
 	outputFileName_POCA= jobDirName + std::string("/POCAOutput_") + Utilities::GetBaseFileNameNoPath(outputFileName) + std::string(".root");
 	configFileName_POCA= jobDirName + std::string("/POCAConfig.cfg");
 
-	cout<<"TomographyRecTabMenu::POCAStart(): INFO: inputFileName_POCA="<<inputFileName_POCA<<"  outputFileName_POCA="<<outputFileName_POCA<<"  configFileName_POCA="<<configFileName_POCA<<endl;
+	DEBUG_LOG("inputFileName_POCA="<<inputFileName_POCA<<"  outputFileName_POCA="<<outputFileName_POCA<<"  configFileName_POCA="<<configFileName_POCA);
 
 	//Form script name
 	std::string scriptName= Gui::GUI_SCRIPT_DIR + std::string("/POCAReconstructorSubmitter.sh");
@@ -979,7 +971,7 @@ void TomographyRecTabMenu::POCAStart(QString msg){
 	
 	QFileInfo scriptFileInfo(scriptName.c_str());
 	if(!scriptFileInfo.exists()){
-		cerr<<"TomographyRecTabMenu::POCAStart(): ERROR: POCA submitter script file does not exists...exit!"<<endl;
+		ERROR_LOG("POCA submitter script file does not exists...exit!");
 		return;
 	}	
 
@@ -1006,11 +998,10 @@ void TomographyRecTabMenu::POCAStart(QString msg){
 	bool process_status= QProcess::startDetached(shell_path, args);	
 		
 	if(!process_status){
-		cerr<<"TomographyRecTabMenu::POCAStart(): ERROR: Cannot start POCAStart process...exit!"<<endl;
+		ERROR_LOG("Cannot start POCAStart process...exit!");
 		return;
 	}
 	
-
 }//close TomographyRecTabMenu::POCAStart()
 
 
@@ -1025,7 +1016,7 @@ void TomographyRecTabMenu::ACFStart(QString msg){
 	QVariantList result = parser.parse(data, &ok).toList();
 	
 	if(!ok){
-		cerr<<"TomographyRecTabMenu::ACFStart(). ERROR: Cannot parse JSON string message...exit!"<<endl;
+		ERROR_LOG("Cannot parse JSON string message...exit!");
 		return;
 	}
 	
@@ -1057,27 +1048,23 @@ void TomographyRecTabMenu::ACFStart(QString msg){
 	}
 
 		 
-	cout<<"TomographyRecTabMenu::ACFStart(): INFO: inputFileName="<<inputFileName<<" jobDirName="<<jobDirName<<"  outputFileName="<<outputFileName<<"  guihostName="<<guihostName<<"  guiportNo="<<guiportNo<<"  guiKey="<<guiKey<<"  scanId="<<scanId<<"  containerId="<<containerId<<"  timeStamp="<<timeStamp<<endl;
+	DEBUG_LOG("inputFileName="<<inputFileName<<" jobDirName="<<jobDirName<<"  outputFileName="<<outputFileName<<"  guihostName="<<guihostName<<"  guiportNo="<<guiportNo<<"  guiKey="<<guiKey<<"  scanId="<<scanId<<"  containerId="<<containerId<<"  timeStamp="<<timeStamp);
 	
 	//## Copy config file into the output job directory
 	std::string configFileName= Gui::GUI_CONFIG_DIR + std::string("/ACFConfig.cfg");
 
 	if(fRunExecMode==eLocalInteractive || fRunExecMode==eLocalBatch){
-		
 		std::string cpProcExe= Form("cp %s %s",configFileName.c_str(),jobDirName.c_str());
 		Utilities::ExecSystemCommand(cpProcExe.c_str());
-		cout<<"TomographyRecTabMenu::ACFStart(): INFO: cpProcExe: "<<cpProcExe<<endl;
-
+		DEBUG_LOG("cpProcExe: "<<cpProcExe);
 	}
 	else if(fRunExecMode==eRemoteBatch){//remote copy
-	
 		std::string scpProcExe= Form("scp %s %s@%s:%s",configFileName.c_str(),Gui::SEI_USERNAME.c_str(),Gui::SEI_HOSTNAME.c_str(),jobDirName.c_str());
 		Utilities::ExecSystemCommand(scpProcExe.c_str());
-		cout<<"TomographyRecTabMenu::ACFStart(): INFO: scpProcExe: "<<scpProcExe<<endl;
-
+		DEBUG_LOG("scpProcExe: "<<scpProcExe);
 	}
 	else{
-		cerr<<"TomographyRecTabMenu::ACFStart(): INFO: Invalid run option ("<<fRunMode<<") ...exit!"<<endl;
+		ERROR_LOG("Invalid run option ("<<fRunMode<<") ...exit!");
 		return;
 	}
 
@@ -1091,7 +1078,7 @@ void TomographyRecTabMenu::ACFStart(QString msg){
 	//std::string inputFileName_ACF= outputFileName.toStdString();
 	//std::string outputFileName_ACF= jobDir.toStdString() + std::string("/ACFOutput_") + Utilities::GetBaseFileNameNoPath(inputFileName.toStdString()) + std::string(".root");
 
-	cout<<"TomographyRecTabMenu::ACFStart(): INFO: inputFileName_ACF="<<inputFileName_ACF<<"  outputFileName_ACF="<<outputFileName_ACF<<"  configFileName_ACF="<<configFileName_ACF<<endl;
+	DEBUG_LOG("inputFileName_ACF="<<inputFileName_ACF<<"  outputFileName_ACF="<<outputFileName_ACF<<"  configFileName_ACF="<<configFileName_ACF);
 
 	//Form script name
 	std::string scriptName= Gui::GUI_SCRIPT_DIR + std::string("/ACFReconstructorSubmitter.sh");
@@ -1099,7 +1086,7 @@ void TomographyRecTabMenu::ACFStart(QString msg){
 	
 	QFileInfo scriptFileInfo(scriptName.c_str());
 	if(!scriptFileInfo.exists()){
-		cerr<<"TomographyRecTabMenu::ACFStart(): ERROR: ACF submitter script file does not exists...exit!"<<endl;
+		ERROR_LOG("ACF submitter script file does not exists...exit!");
 		return;
 	}	
 
@@ -1116,7 +1103,6 @@ void TomographyRecTabMenu::ACFStart(QString msg){
 	std::string localRunArg= "";
 	if(fRunExecMode==eLocalInteractive || fRunExecMode==eLocalBatch) localRunArg= "--local";
 		
-
 	QStringList args;
   args << scriptName.c_str() << inputFileArg.c_str() << outputFileArg.c_str() << configFileArg.c_str() << guiHostNameArg.c_str() << guiPortNoArg.c_str() << guiKeyArg.c_str() << scanIdArg.c_str() << containerIdArg.c_str() << timeStampArg.c_str() << localRunArg.c_str();
 		
@@ -1126,7 +1112,7 @@ void TomographyRecTabMenu::ACFStart(QString msg){
 	bool process_status= QProcess::startDetached(shell_path, args);	
 		
 	if(!process_status){
-		cerr<<"TomographyRecTabMenu::ACFStart(): ERROR: Cannot start ACFStart process...exit!"<<endl;
+		ERROR_LOG("Cannot start ACFStart process...exit!");
 		return;
 	}
 
@@ -1144,7 +1130,7 @@ void TomographyRecTabMenu::FOFStart(QString msg){
 	QVariantList result = parser.parse(data, &ok).toList();
 	
 	if(!ok){
-		cerr<<"TomographyRecTabMenu::FOFStart(). ERROR: Cannot parse JSON string message...exit!"<<endl;
+		ERROR_LOG("Cannot parse JSON string message...exit!");
 		return;
 	}
 	
@@ -1176,41 +1162,35 @@ void TomographyRecTabMenu::FOFStart(QString msg){
 	}
 
 		 
-	cout<<"TomographyRecTabMenu::FOFStart(): INFO: inputFileName="<<inputFileName<<" jobDirName="<<jobDirName<<"  outputFileName="<<outputFileName<<"  guihostName="<<guihostName<<"  guiportNo="<<guiportNo<<"  guiKey="<<guiKey<<"  scanId="<<scanId<<"  containerId="<<containerId<<"  timeStamp="<<timeStamp<<endl;
+	DEBUG_LOG("inputFileName="<<inputFileName<<" jobDirName="<<jobDirName<<"  outputFileName="<<outputFileName<<"  guihostName="<<guihostName<<"  guiportNo="<<guiportNo<<"  guiKey="<<guiKey<<"  scanId="<<scanId<<"  containerId="<<containerId<<"  timeStamp="<<timeStamp);
 	
 	//## Copy config file into the output job directory
 	std::string configFileName= Gui::GUI_CONFIG_DIR + std::string("/FOFConfig.cfg");
 
 	if(fRunExecMode==eLocalInteractive || fRunExecMode==eLocalBatch){
-		
 		std::string cpProcExe= Form("cp %s %s",configFileName.c_str(),jobDirName.c_str());
 		Utilities::ExecSystemCommand(cpProcExe.c_str());
-		cout<<"TomographyRecTabMenu::FOFStart(): INFO: cpProcExe: "<<cpProcExe<<endl;
-
+		DEBUG_LOG("cpProcExe: "<<cpProcExe);
 	}
 	else if(fRunExecMode==eRemoteBatch){//remote copy
-	
 		std::string scpProcExe= Form("scp %s %s@%s:%s",configFileName.c_str(),Gui::SEI_USERNAME.c_str(),Gui::SEI_HOSTNAME.c_str(),jobDirName.c_str());
 		Utilities::ExecSystemCommand(scpProcExe.c_str());
-		cout<<"TomographyRecTabMenu::FOFStart(): INFO: scpProcExe: "<<scpProcExe<<endl;
-
+		DEBUG_LOG("scpProcExe: "<<scpProcExe);
 	}
 	else{
-		cerr<<"TomographyRecTabMenu::FOFStart(): INFO: Invalid run option ("<<fRunMode<<") ...exit!"<<endl;
+		ERROR_LOG("Invalid run option ("<<fRunMode<<") ...exit!");
 		return;
 	}
-
-			
+		
 	//## Set input and output filename for FOF
 	inputFileName_FOF= jobDirName + std::string("/") + Utilities::GetBaseFileNameNoPath(outputFileName) + std::string(".root");
 	outputFileName_FOF= jobDirName + std::string("/FOFOutput_") + Utilities::GetBaseFileNameNoPath(inputFileName) + std::string(".root");
 	configFileName_FOF= jobDirName + std::string("/FOFConfig.cfg");
 
-
 	//std::string inputFileName_FOF= outputFileName.toStdString();
 	//std::string outputFileName_FOF= jobDir.toStdString() + std::string("/FOFOutput_") + Utilities::GetBaseFileNameNoPath(inputFileName.toStdString()) + std::string(".root");
 
-	cout<<"TomographyRecTabMenu::FOFStart(): INFO: inputFileName_FOF="<<inputFileName_FOF<<"  outputFileName_FOF="<<outputFileName_FOF<<"  configFileName_FOF="<<configFileName_FOF<<endl;
+	DEBUG_LOG("inputFileName_FOF="<<inputFileName_FOF<<", outputFileName_FOF="<<outputFileName_FOF<<"  configFileName_FOF="<<configFileName_FOF);
 
 	//Form script name
 	std::string scriptName= Gui::GUI_SCRIPT_DIR + std::string("/FOFReconstructorSubmitter.sh");
@@ -1218,7 +1198,7 @@ void TomographyRecTabMenu::FOFStart(QString msg){
 	
 	QFileInfo scriptFileInfo(scriptName.c_str());
 	if(!scriptFileInfo.exists()){
-		cerr<<"TomographyRecTabMenu::FOFStart(): ERROR: FOF submitter script file does not exists...exit!"<<endl;
+		ERROR_LOG("FOF submitter script file does not exists...exit!");
 		return;
 	}	
 
@@ -1245,11 +1225,10 @@ void TomographyRecTabMenu::FOFStart(QString msg){
 	bool process_status= QProcess::startDetached(shell_path, args);	
 		
 	if(!process_status){
-		cerr<<"TomographyRecTabMenu::FOFStart(): ERROR: Cannot start FOFStart process...exit!"<<endl;
+		ERROR_LOG("Cannot start FOFStart process...exit!");
 		return;
 	}
 	
-
 }//close TomographyRecTabMenu::FOFStart()
 
 
@@ -1265,7 +1244,7 @@ void TomographyRecTabMenu::viewerStart(QString msg){
 	QVariantList result = parser.parse(data, &ok).toList();
 	
 	if(!ok){
-		cerr<<"TomographyRecTabMenu::viewerStart(): ERROR: Cannot parse JSON string message...exit!"<<endl;
+		ERROR_LOG("Cannot parse JSON string message...exit!");
 		return;
 	}
 	
@@ -1294,12 +1273,12 @@ void TomographyRecTabMenu::viewerStart(QString msg){
 	}
 
 		 
-	cout<<"TomographyRecTabMenu::viewerStart(): INFO: inputFileName="<<inputFileName<<" jobDirName="<<jobDirName<<"  outputFileName="<<outputFileName<<"  guihostName="<<guihostName<<"  guiportNo="<<guiportNo<<"  guiKey="<<guiKey<<"  scanId="<<scanId<<"  containerId="<<containerId<<"  timeStamp="<<timeStamp<<endl;
+	DEBUG_LOG("inputFileName="<<inputFileName<<" jobDirName="<<jobDirName<<"  outputFileName="<<outputFileName<<"  guihostName="<<guihostName<<"  guiportNo="<<guiportNo<<"  guiKey="<<guiKey<<"  scanId="<<scanId<<"  containerId="<<containerId<<"  timeStamp="<<timeStamp);
 	
 	//## Download viewer input file
 	std::string scpProcExe= Form("scp %s %s@%s:%s",inputFileName.c_str(),Gui::SEI_USERNAME.c_str(),Gui::SEI_HOSTNAME.c_str(),jobDirName.c_str());
 	Utilities::ExecSystemCommand(scpProcExe.c_str());
-	cout<<"TomographyRecTabMenu::viewerStart(): INFO: scpProcExe: "<<scpProcExe<<endl;
+	DEBUG_LOG("scpProcExe: "<<scpProcExe);
 
 	//## Start 3D viewer 
 	QThread* viewerThread= new QThread();
@@ -1314,7 +1293,7 @@ void TomographyRecTabMenu::viewerStart(QString msg){
 	connect(viewer, SIGNAL(finished()), viewerThread, SLOT(quit()));//quit thread after finished signal
 	connect(viewer, SIGNAL(finished()), viewer, SLOT(deleteLater()));//delete object after finished signal	
 
-}//close TomographyRecTabMenu::viewerStart()
+}//close viewerStart()
 
 
 
@@ -1348,12 +1327,12 @@ void TomographyRecTabMenu::Run(){
 		fRunExecMode= eRemoteBatch;
 	}
 
-	cout<<"TomographyRecTabMenu::Run(): INFO: RunMode: "<<fRunMode<<"  RunExecMode: "<<fRunExecMode<<endl;	
+	INFO_LOG("Tomography imaging options: RunMode: "<<fRunMode<<", RunExecMode: "<<fRunExecMode);
 
 
 	//### Create a TCP server listening for communications from the reconstruction algorithms
 	if(!fIsServerRunning){
-		cout<<"TomographyRecTabMenu::Run(): INFO: Creating tcp server..."<<endl;
+		INFO_LOG("Creating tcp server listening for connections from the reconstruction algorithms...");
 		server= new QTcpServer(this);
 		server->listen(QHostAddress::Any, Gui::SOCK_LISTEN_PORT);
 		fIsServerRunning= server->isListening();
@@ -1405,7 +1384,7 @@ void TomographyRecTabMenu::ManualRunTomographyReconstruction(){
 
 	std::string outputFileName= inputFileBaseName;
 
-	cout<<"TomographyRecTabMenu::ManualRunTomographyReconstruction(): jobDirName= "<<jobDirName<<"  inputFileName="<<inputFileName<<"  outputFileName="<<outputFileName<<endl;
+	DEBUG_LOG("jobDirName= "<<jobDirName<<"  inputFileName="<<inputFileName<<"  outputFileName="<<outputFileName);
 
 	std::string inputFileName_POCA= "";
 	std::string outputFileName_POCA= "";
@@ -1458,13 +1437,13 @@ void TomographyRecTabMenu::ManualRunTomographyReconstruction(){
 	
 	//## Define and start local POCA thread
 	if(Gui::fConfigParser->fUsePOCAAlgorithm) {
-		cout<<"TomographyRecTabMenu::ManualRunTomographyReconstruction(): INFO: Define and start local POCA thread ..."<<endl;
+		INFO_LOG("Define and start local POCA thread ...");
 		
 		inputFileName_POCA= jobDirName + std::string("/") + outputFileName;
 		outputFileName_POCA= jobDirName + std::string("/POCAOutput_") + Utilities::GetBaseFileNameNoPath(outputFileName) + std::string(".root");
 		fPOCAOutputFileNameList[fCurrentScanIndex]= outputFileName_POCA;
 
-		cout<<"TomographyRecTabMenu::ManualRunTomographyReconstruction(): INFO: inputFileName_POCA="<<inputFileName_POCA<<"  outputFileName_POCA="<<outputFileName_POCA<<endl;
+		DEBUG_LOG("inputFileName_POCA="<<inputFileName_POCA<<"  outputFileName_POCA="<<outputFileName_POCA);
 
 		pocaRecoThread= new QThread();
 		pocaRecoThreadObj= new POCAThreadObj;
@@ -1508,13 +1487,13 @@ void TomographyRecTabMenu::ManualRunTomographyReconstruction(){
 		//## Define and start local ACF thread
 		if(Gui::fConfigParser->fUseACFAlgorithm) {
 	
-			cout<<"TomographyRecTabMenu::ManualRunTomographyReconstruction(): INFO: Define and start local ACF thread ..."<<endl;
+			INFO_LOG("Define and start local ACF thread ...");
 	
 			inputFileName_ACF= outputFileName_POCA;
 			outputFileName_ACF= jobDirName + std::string("/ACFOutput_") + Utilities::GetBaseFileNameNoPath(outputFileName) + std::string(".root");
 			fACFOutputFileNameList[fCurrentScanIndex]= outputFileName_ACF;
 
-			cout<<"TomographyRecTabMenu::ManualRunTomographyReconstruction(): INFO: inputFileName_ACF="<<inputFileName_ACF<<"  outputFileName_ACF="<<outputFileName_ACF<<endl;
+			DEBUG_LOG("inputFileName_ACF="<<inputFileName_ACF<<"  outputFileName_ACF="<<outputFileName_ACF);
 
 			acfAnalysisThread= new QThread();
 			acfAnalysisThreadObj= new ACFAnalysisThreadObj;
@@ -1554,13 +1533,13 @@ void TomographyRecTabMenu::ManualRunTomographyReconstruction(){
 
 		//## Define and start local FOF thread
 		if(Gui::fConfigParser->fUseClusteringAlgorithm) {
-			cout<<"TomographyRecTabMenu::ManualRunTomographyReconstruction(): INFO: Define and start local FOF thread ..."<<endl;
+			INFO_LOG("Define and start local FOF thread ...");
 	
 			inputFileName_FOF= outputFileName_POCA;
 			outputFileName_FOF= jobDirName + std::string("/FOFOutput_") + Utilities::GetBaseFileNameNoPath(outputFileName) + std::string(".root");
 			fClusteringOutputFileNameList[fCurrentScanIndex]= outputFileName_FOF;
 
-			cout<<"TomographyRecTabMenu::ManualRunTomographyReconstruction(): INFO: inputFileName_FOF="<<inputFileName_FOF<<"  outputFileName_FOF="<<outputFileName_FOF<<endl;
+			DEBUG_LOG("inputFileName_FOF="<<inputFileName_FOF<<"  outputFileName_FOF="<<outputFileName_FOF);
 
 			fofThread= new QThread();
 			fofThreadObj= new FOFThreadObj;	
@@ -1604,14 +1583,13 @@ void TomographyRecTabMenu::ManualRunTomographyReconstruction(){
 
 	//## Create EM reco thread
 	if(Gui::fConfigParser->fUseEMLLAlgorithm) {
-		cout<<"TomographyRecTabMenu::ManualRunTomographyReconstruction(): INFO: Define and start local EMML thread ..."<<endl;
+		INFO_LOG("Define and start local EMML thread ...");
 	
 		inputFileName_EMML= jobDirName + std::string("/") + outputFileName;
 		outputFileName_EMML= jobDirName + std::string("/EMMLOutput_") + Utilities::GetBaseFileNameNoPath(outputFileName) + std::string(".root");
 		fEMLLOutputFileNameList[fCurrentScanIndex]= outputFileName_EMML;
 
-		cout<<"TomographyRecTabMenu::ManualRunTomographyReconstruction(): INFO: inputFileName_EMML="<<inputFileName_EMML<<"  outputFileName_EMML="<<outputFileName_EMML<<endl;
-
+		DEBUG_LOG("inputFileName_EMML="<<inputFileName_EMML<<"  outputFileName_EMML="<<outputFileName_EMML);
 
 		emTomographyRecoThread= new QThread();	
 		emTomographyRecoThreadObj= new EMTomographyRecoThreadObj;
@@ -1632,13 +1610,12 @@ void TomographyRecTabMenu::ManualRunTomographyReconstruction(){
 				connect(fofThreadObj, SIGNAL(finished()), emTomographyRecoThread, SLOT(start()));//connect end FOF with EM reco start
 			}
 			else{
-				cerr<<"TomographyRecTabMenu::ManualRunTomographyReconstruction(): WARNING: You must activate FOF when EMLLWaitClusteringOutput is selected...cannot perform EMML analysis!"<<endl;
+				WARN_LOG("You must activate FOF when EMLLWaitClusteringOutput option is selected...cannot perform EMML analysis!");
 			}
 		}
 		else{
 			connect(downloaderThreadObj, SIGNAL(finished()), emTomographyRecoThread, SLOT(start()));//connect end download with EM reco start
 		}
-		
 		
 		connect(emTomographyRecoThread, SIGNAL(started()), this, SLOT(SetBusyEMTomographyRecoStatus()));//turn status light red blinking
 		//connect(emTomographyRecoThread, SIGNAL(started()), this, SLOT(EnableLLStopButton()));//launch image processing	
@@ -1667,11 +1644,8 @@ void TomographyRecTabMenu::ManualRunTomographyReconstruction(){
 			
 	}//close if use LL algorithm
 	
-	
 
-}//close TomographyRecTabMenu::ManualRunTomographyReconstruction()
-
-
+}//close ManualRunTomographyReconstruction()
 
 
 void TomographyRecTabMenu::ManualBatchRunTomographyReconstruction(){
@@ -1699,7 +1673,7 @@ void TomographyRecTabMenu::ManualBatchRunTomographyReconstruction(){
 
 	std::string outputFileName= inputFileBaseName;
 
-	cout<<"TomographyRecTabMenu::ManualBatchRunTomographyReconstruction(): jobDirName= "<<jobDirName<<"  inputFileName="<<inputFileName<<"  outputFileName="<<outputFileName<<endl;
+	DEBUG_LOG("jobDirName= "<<jobDirName<<"  inputFileName="<<inputFileName<<"  outputFileName="<<outputFileName);
 
 	
 	//## Make the output job directory
@@ -1734,7 +1708,7 @@ void TomographyRecTabMenu::ManualBatchRunTomographyReconstruction(){
 	bool ok;
 	QByteArray msg= serializer.serialize(downloadConfigMsg,&ok);
 
-	cout<<"TomographyRecTabMenu::ManualBatchRunTomographyReconstruction(): INFO: Download config message: "<<qPrintable(QString(msg))<<endl;
+	DEBUG_LOG("Download config message: "<<qPrintable(QString(msg)));
 		
 	//## Define and start local download thread
 	//## Other tasks are started triggered by download finish 
@@ -1742,7 +1716,7 @@ void TomographyRecTabMenu::ManualBatchRunTomographyReconstruction(){
 		emit downloadStartSig(QString(msg));
 	}
 	else{
-		cerr<<"TomographyRecTabMenu::ManualBatchRunTomographyReconstruction(): ERROR: Cannot serialize json message to be sent to download task...exit!"<<endl;
+		ERROR_LOG("Cannot serialize json message to be sent to download task...exit!");
 		return;
 	}
 
@@ -2719,43 +2693,39 @@ void TomographyRecTabMenu::SetCompleteClusteringRecoStatus(){
 
 void TomographyRecTabMenu::playAlarmSound_POCAReco(){
 
-	/*
-	if(mMediaObject_POCAReco[fCurrentScanIndex]){
+	//Play alarm
+	if(Gui::fConfigParser->fEnableSounds && mMediaObject_POCAReco[fCurrentScanIndex]){
 		mMediaObject_POCAReco[fCurrentScanIndex]->play();
 	}
-	*/
 
 }//close playAlarmSound_POCAReco()
 
 void TomographyRecTabMenu::playAlarmSound_LLReco(){
 
-	/*
-	if(mMediaObject_LLReco[fCurrentScanIndex]){
+	//Play alarm
+	if(Gui::fConfigParser->fEnableSounds &&  mMediaObject_LLReco[fCurrentScanIndex]){
 		mMediaObject_LLReco[fCurrentScanIndex]->play();
 	}
-	*/
 
 }//close playAlarmSound_LLReco()
 
 
 void TomographyRecTabMenu::playAlarmSound_ClusteringReco(){
 
-	/*
-	if(mMediaObject_ClusteringReco[fCurrentScanIndex]) {
+	//Play alarm
+	if(Gui::fConfigParser->fEnableSounds &&  mMediaObject_ClusteringReco[fCurrentScanIndex]) {
 		mMediaObject_ClusteringReco[fCurrentScanIndex]->play();
 	}
-	*/
 	
 }//close playAlarmSound_ClusteringReco()
 
 
 void TomographyRecTabMenu::playAlarmSound_ACFReco(){
 
-	/*
-	if(mMediaObject_ACFReco[fCurrentScanIndex]){
+	//Play alarm
+	if(Gui::fConfigParser->fEnableSounds && mMediaObject_ACFReco[fCurrentScanIndex]){
 		mMediaObject_ACFReco[fCurrentScanIndex]->play();
 	}
-	*/
 
 }//close playAlarmSound_ACFReco()
 
@@ -2766,10 +2736,9 @@ void TomographyRecTabMenu::serviceReplyFinished(QNetworkReply* currentReply){
 	QScriptEngine engine;
   QScriptValue result = engine.evaluate("(" + data + ")");
 
-	cout<<"TomographyRecTabMenu::serviceReplyFinished(): INFO: data: "<<qPrintable(data)<<endl;
+	DEBUG_LOG("data: "<<qPrintable(data));
 	
-	
-}//close TomographyRecTabMenu::serviceReplyFinished()
+}//close serviceReplyFinished()
 
 
 void TomographyRecTabMenu::displayAlarm_POCAReco(){
@@ -2798,7 +2767,7 @@ void TomographyRecTabMenu::sendAlarm_POCAReco(QString message){
 
 	//## Define post data to be passed to the web-service
 	std::string alarmStatus= message.toStdString();
-	cout<<"alarmStatus="<<alarmStatus<<endl;
+	DEBUG_LOG("alarmStatus="<<alarmStatus);
 
 	//QByteArray postData;	
 	//postData.append("temp1=string&");
@@ -2818,7 +2787,7 @@ void TomographyRecTabMenu::sendAlarm_LLReco(QString message){
 
 	//## Define post data to be passed to the web-service
 	std::string alarmStatus= message.toStdString();
-	cout<<"alarmStatus="<<alarmStatus<<endl;
+	DEBUG_LOG("alarmStatus="<<alarmStatus);
 
 	QUrl params;
 	params.addQueryItem("alarm2", alarmStatus.c_str());
@@ -2832,7 +2801,7 @@ void TomographyRecTabMenu::sendAlarm_ClusteringReco(QString message){
 
 	//## Define post data to be passed to the web-service
 	std::string alarmStatus= message.toStdString();
-	cout<<"alarmStatus="<<alarmStatus<<endl;
+	DEBUG_LOG("alarmStatus="<<alarmStatus);
 
 	QUrl params;
 	params.addQueryItem("alarm3", alarmStatus.c_str());
@@ -2847,7 +2816,7 @@ void TomographyRecTabMenu::sendAlarm_ACFReco(QString message){
 
 	//## Define post data to be passed to the web-service
 	std::string alarmStatus= message.toStdString();
-	cout<<"alarmStatus="<<alarmStatus<<endl;
+	DEBUG_LOG("alarmStatus="<<alarmStatus);
 
 	QUrl params;
 	params.addQueryItem("alarm4", alarmStatus.c_str());
@@ -2918,7 +2887,6 @@ void TomographyRecTabMenu::displayAlarm_ClusteringReco(){
 
 void TomographyRecTabMenu::EnablePOCAViewerButton(){
 
-	cout<<"TomographyRecTabMenu::EnablePOCAViewerButton()"<<endl;
 	pushButtonList_POCARecoStatus[fCurrentScanIndex]->setEnabled(true);
 	pushButtonList_POCAVolRendering[fCurrentScanIndex]->setEnabled(true);
 
@@ -2926,7 +2894,6 @@ void TomographyRecTabMenu::EnablePOCAViewerButton(){
 
 void TomographyRecTabMenu::EnableLLRecoViewerButton(){
 	
-	cout<<"TomographyRecTabMenu::EnableLLViewerButton()"<<endl;
 	pushButtonList_LLRecoStatus[fCurrentScanIndex]->setEnabled(true);
 	pushButtonList_LLVolRendering[fCurrentScanIndex]->setEnabled(true);
 
@@ -2975,7 +2942,6 @@ void TomographyRecTabMenu::StartPOCAVolRenderingViewer(){
 	QPushButton* button_pressed = static_cast<QPushButton*>(sender());
  	int pos = pushButtonList_POCAViewer.indexOf(button_pressed);
 	std::string inputFileName= fPOCAOutputFileNameList[pos];
-	cout<<"pos="<<pos<<"  inputFileName="<<inputFileName<<endl;
 	
 	//std::string imageOutputFileName= std::string("VolRendFig_") + Gui::fConfigParser->fPOCAOutputFileName + std::string(".png");
 	std::string imageOutputFileName= std::string("VolRendFig_") + inputFileName + std::string(".png");
@@ -3025,7 +2991,7 @@ void TomographyRecTabMenu::StartLLVolRenderingViewer(){
 	//std::string imageOutputFileName= std::string("VolRendFig_") + Gui::fConfigParser->fEMLLOutputFileName + std::string(".png");
 	//std::string imageOutputFileName= std::string("VolRendFig_") + imageInputFileName + std::string(".png");
 	std::string imageOutputFileName= Gui::GUI_DATA_DIR + std::string("/VolRendFig_") + imageInputFileName + std::string(".png");
-	cout<<"TomographyRecTabMenu::StartLLVolRenderingViewer(): INFO: imageInputFileName= "<<imageInputFileName<<"  imageOutputFileName="<<imageOutputFileName<<endl;
+	DEBUG_LOG("imageInputFileName= "<<imageInputFileName<<", imageOutputFileName="<<imageOutputFileName);
 
 	QThread* viewerThread= new QThread();
 	VolumeRenderingViewer* viewer= new VolumeRenderingViewer();

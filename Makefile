@@ -23,7 +23,7 @@ OBJDIR  = $(TOPDIR)/obj
 USER_SRCS = $(wildcard $(SRCDIR)/*.cc)
 OBJS = $(USER_SRCS:.cc=.o)
 
-MAIN_GUI = MPToolkit.cc
+MAIN_GUI = MuonPortalGUI.cc
 MAIN_GUI_OBJ = $(MAIN_GUI:.cc=.o)
 MAIN_VIEWER = Viewer.cc
 MAIN_VIEWER_OBJ = $(MAIN_VIEWER:.cc=.o)
@@ -64,7 +64,7 @@ LBITS   = $(shell getconf LONG_BIT)
 SVN_REVISION_VERSION = -D'SVN_REVISION_VERSION="$(shell svnversion -n .)"'
 
 # Set executable a name
-EXE = MPToolkit
+EXE = MuonPortalGUI
 VIEWER_EXE = Viewer
 ADVANCEDVIEWER_EXE = AdvancedViewer
 EMMLIMAGING_EXE= EMMLTomographyImaging
@@ -92,12 +92,12 @@ CPPFLAGS = $(INCDIR)
 ifeq ($(LBITS),64)
   # do 64 bit stuff here
 	CPPFLAGS += -I/usr/include -pthread -m64
-	CXXFLAGS = -std=c++11 -O2 -Wall -Wunused -Wuninitialized -fPIC -pthread -m64
+	CXXFLAGS = -std=c++11 -O2 -Wall -Wunused -Wuninitialized -Wno-deprecated -fPIC -pthread -m64
 	SYSLIBDIR = /usr/lib/x86_64-linux-gnu/
 else
   # do 32 bit stuff here
 	CPPFLAGS += -I/usr/include -pthread -m32
-  CXXFLAGS = -std=c++11 -O2 -Wall -Wunused -Wuninitialized -fPIC -pthread -m32
+  CXXFLAGS = -std=c++11 -O2 -Wall -Wunused -Wuninitialized -Wno-deprecated -fPIC -pthread -m32
 	SYSLIBDIR = /usr/lib/x86_64-linux-gnu/
 endif
 
@@ -205,6 +205,9 @@ $(SRCDIR_GUI)/moc_AnalysisTabMenu.o : $(SRCDIR_GUI)/moc_AnalysisTabMenu.cxx
 $(SRCDIR_GUI)/moc_ContainerTab.o : $(SRCDIR_GUI)/moc_ContainerTab.cxx
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
 
+$(SRCDIR_GUI)/moc_GuiOptionsTab.o : $(SRCDIR_GUI)/moc_GuiOptionsTab.cxx
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@ 
+
 $(SRCDIR_GUI)/moc_POCATab.o : $(SRCDIR_GUI)/moc_POCATab.cxx
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
 
@@ -278,6 +281,8 @@ $(SRCDIR_GUI)/moc_AboutTabMenu.cxx: $(INCDIR_GUI)/AboutTabMenu.h
 $(SRCDIR_GUI)/moc_AnalysisTabMenu.cxx: $(INCDIR_GUI)/AnalysisTabMenu.h
 	moc $< -o $@
 $(SRCDIR_GUI)/moc_ContainerTab.cxx: $(INCDIR_GUI)/ContainerTab.h
+	moc $< -o $@
+$(SRCDIR_GUI)/moc_GuiOptionsTab.cxx: $(INCDIR_GUI)/GuiOptionsTab.h
 	moc $< -o $@
 $(SRCDIR_GUI)/moc_POCATab.cxx: $(INCDIR_GUI)/POCATab.h
 	moc $< -o $@

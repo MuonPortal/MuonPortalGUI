@@ -66,7 +66,8 @@ private:
 	std::string fConfigFileName;
 	static std::string fInputFileName;
 
-
+	//## GUI options
+	static bool fEnableSounds;
 	
 	//## detector info	
 	static std::vector<double> fZPlane;
@@ -226,6 +227,7 @@ private:
 	friend class EMLLTab;			
 	friend class POCATab;		
 	friend class ClusteringTab;	
+	friend class GuiOptionsTab;		
 	friend class ACFTab;	
 	friend class TomographyRecTabMenu;
 	friend class POCAThreadObj;	

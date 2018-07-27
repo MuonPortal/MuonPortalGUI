@@ -25,6 +25,12 @@
 */
 #include <TabMenu.h>
 #include <Gui.h>
+#include <ContainerTab.h>
+#include <GuiOptionsTab.h>
+#include <POCATab.h>
+#include <EMLLTab.h>
+#include <ACFTab.h>
+#include <ClusteringTab.h>
 #include <Logger.h>
 #include <Utilities.h>
 #include <QtGui>
@@ -56,7 +62,9 @@ TabMenu::TabMenu(QWidget *parent)
 	fClusteringTab= new ClusteringTab(fTabMenu);
 	fClusteringTab->setObjectName(QString::fromUtf8("tab_Clustering"));
 	
-
+	fGuiOptionsTab= new GuiOptionsTab(fTabMenu);
+	fGuiOptionsTab->setObjectName(QString::fromUtf8("tab_Options"));
+	
 	std::string initButton_imagepath= Gui::GUI_BASE_DIR + std::string("/share/initButton.png");
 	pushButton_Init = new QPushButton(tr("Init"));
   pushButton_Init->setObjectName(QString::fromUtf8("pushButton_Init"));
@@ -67,11 +75,10 @@ TabMenu::TabMenu(QWidget *parent)
 	QImage image(checkButton_imagepath.c_str());
 	image.setText(QString("Standard Config"),QString("Standard Config"));
 
-	
 
-	//## Add tabs to main menu
-	
+	//## Add tabs to main menu	
 	fTabMenu->addTab(fContainerTab, tr("Geometry"));	
+	fTabMenu->addTab(fGuiOptionsTab, tr("GuiOptions"));
 	fTabMenu->addTab(fPOCATab, tr("POCA"));
 	fTabMenu->addTab(fACFTab, tr("ACF"));		
 	fTabMenu->addTab(fClusteringTab, tr("Clustering"));		
@@ -82,7 +89,6 @@ TabMenu::TabMenu(QWidget *parent)
 	connect(pushButton_Init, SIGNAL(clicked()), this, SLOT(SetTabMenuOptions()) );	
 	connect(pushButton_Init, SIGNAL(clicked()), Gui::fTomographyRecTabMenu, SLOT(EnableRunButton()) );
 		
-	
 
 	//## Set object layout
 	QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -109,7 +115,7 @@ void TabMenu::SetTabMenuOptions(){
 	fEMLLTab->SetEMLLOptions();
 	fACFTab->SetACFOptions();
 	fClusteringTab->SetClusteringOptions();
-
+	fGuiOptionsTab->SetOptions();
 	
 }//close TabMenu::SetTabMenuOptions()
 

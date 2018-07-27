@@ -40,6 +40,9 @@ using namespace std;
 
 namespace MuonPortalNS {
 
+//## GUI options
+bool ConfigParser::fEnableSounds;
+
 //## Detector info
 std::string ConfigParser::fInputFileName;
 std::vector<double> ConfigParser::fZPlane;
@@ -193,6 +196,9 @@ ConfigParser::ConfigParser(std::string filename){
 
 	fConfigFileName= filename;
 	fInputFileName= "";
+	
+	//## GUI options
+	fEnableSounds= false;
 
 	//## Detector info
 	fZPlane.clear();
@@ -550,7 +556,13 @@ void ConfigParser::ReadConfig() {
 				else if(descriptor.compare("voxelSize")==0){
 					line >> descriptor >> fVoxelSizeX >> fVoxelSizeY >> fVoxelSizeZ;
 				}
-				
+
+				//####################################
+				//####  GUI OPTIONS
+				//####################################
+				else if(descriptor.compare("enableSounds")==0){
+					line >> descriptor >> fEnableSounds;
+				}
 
 				//########################
 				//###   RECO CONFIG    ###

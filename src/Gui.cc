@@ -119,7 +119,7 @@ Gui::Gui(QWidget *parent)
   mainLayout->addLayout(buttonsLayout);
   setLayout(mainLayout);
 
-  setWindowTitle(tr("MPToolkit GUI"));
+  setWindowTitle(tr("MuonPortalGUI"));
 	setFixedSize(1100, 700);
 
 }//close constructor

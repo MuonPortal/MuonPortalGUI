@@ -16,15 +16,15 @@
 // * MuonPortalGUI. If not, see http://www.gnu.org/licenses/.                   *
 // ******************************************************************************
 /**
-* @file TabMenu.h
-* @class TabMenu
-* @brief GUI tab menu
+* @file GuiOptionsTab.h
+* @class GuiOptionsTab
+* @brief GUI option tab menu
 * 
 * @author S. Riggi
 * @date 25/04/2010
 */
-#ifndef TAB_MENU_H
-#define TAB_MENU_H
+#ifndef GUI_OPTIONS_TAB_H
+#define GUI_OPTIONS_TAB_H
 
 #include <QDialog>
 #include <QObject>
@@ -38,44 +38,30 @@ class QGroupBox;
 class QPushButton;
 class QTextEdit;
 class QComboBox;
+class QSpinBox;
+class QDoubleSpinBox;
+class QRadioButton;
+class QLabel;
 
 namespace MuonPortalNS {
 
-class ContainerTab;
-class GuiOptionsTab;
-class POCATab;
-class EMLLTab;
-class ACFTab;
-class ClusteringTab;
-
-class TabMenu : public QWidget {
+class GuiOptionsTab : public QWidget {
      
 	Q_OBJECT
 
  	public:
-
-  	TabMenu(QWidget *parent = 0);
-
-	public slots:
-		void SetTabMenuOptions();
-
+  	GuiOptionsTab(QWidget *parent = 0);
+ 
+	//public slots:
+		
 	public:
+		void SetOptions();
 
-		
 	private:
-
-		QTabWidget* fTabMenu;
 		
-		ContainerTab* fContainerTab;
-		POCATab* fPOCATab;
-		EMLLTab* fEMLLTab;
-		ACFTab* fACFTab;
-		ClusteringTab* fClusteringTab;
-		GuiOptionsTab* fGuiOptionsTab;
+		QCheckBox* checkBox_enableSounds;
 
-		QPushButton* pushButton_Init;	
-		
-};//close class TabMenu
+};//close class GuiOptionsTab
 
 }//close namespace
 

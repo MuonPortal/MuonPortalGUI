@@ -65,20 +65,20 @@ AboutTabMenu::AboutTabMenu(QWidget *parent){
 	QLabel* textLabel= new QLabel;
 	textLabel->setText(
 		"<center>"
-		"<font size=\"6\"> <b> MPToolkit </b> </font> <BR>"
+		"<font size=\"6\"> <b> MuonPortalGUI </b> </font> <BR>"
 	  "<font size=\"5\"> Copyright &copy;2013. All rights reserved. </font> <BR>"
 		
 		"</center>"
 		"<font size=\"4\"> <i>Author</i>: S. Riggi </font> <BR>"
 		"<font size=\"4\"> <i>Address</i>: INAF Catania - Italy </font> <BR>"
 		"<font size=\"4\"> <i> Bug report to</i>: <a href=\"simone.riggi@gmail.com\">simone.riggi@gmail.com</a> </font> <BR>"
-		"<font size=\"4\"> <i> License & Credits</i>: MPToolkit is licensed under the GNU General Public License (GPL). </font> <BR>" 
+		"<font size=\"4\"> <i> License & Credits</i>: MuonPortalGUI is licensed under the GNU General Public License (GPL). </font> <BR>" 
 		"<font size=\"4\"> It CANNOT be distributed to non-MuonPortal members. </font> <BR>"
 		"<font size=\"4\"> Credits to the authors are required for publications using the tool. </font> <BR>"
 
 		"<BR>"
-		"<font size=\"4\"> The MPToolkit is a C++ tool for tomography imaging developed for the Muon Portal project. </font> <BR> "
-		"<font size=\"4\"> The framework uses GEANT4 & ROOT tools for detector modelling, particle tracking and data analysis. </font> <BR>" 
+		"<font size=\"4\"> MuonPortalGUI is a C++ tool for tomography imaging developed for the Muon Portal project. </font> <BR> "
+		"<font size=\"4\"> The tool uses GEANT4 & ROOT tools for detector modelling, particle tracking and data analysis. </font> <BR>" 
 		"<font size=\"4\"> The GUI is developed in QT4 and the 3D viewer based on VTK lib.</font> <BR>"
 		"<font size=\"4\"> </font> <BR>"
 	);	
