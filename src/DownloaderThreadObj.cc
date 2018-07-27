@@ -30,6 +30,7 @@
 #include <QtGui>
 #include <DownloaderThreadObj.h>
 
+#include <QTcpSocket>
 #include <QUdpSocket>
 #include <QDataStream>
 #include <QHostAddress>

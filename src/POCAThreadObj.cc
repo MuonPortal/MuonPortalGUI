@@ -180,9 +180,10 @@ bool POCAThreadObj::Init(){
 	//## Create input file and count number of events
 	fInputFileStream.open(fInputFileName.c_str());
 	if(!fInputFileStream.good()) {
-		QString errmsg = QString("POCAThreadObj::Init(): ERROR: Cannot open input file ");
-		errmsg+= QString::fromStdString(fInputFileName);
-		errmsg+= QString::fromStdString(std::string(" ... exit!"));
+		std::stringstream ss;
+		ss<<"Cannot open input file "<<fInputFileName<<" ...exit!";
+		ERROR_LOG(ss.str());
+		QString errmsg = QString(ss.str().c_str());
 		emit(statusMessage(errmsg));
 		emit error();
 
@@ -500,10 +501,7 @@ void POCAThreadObj::process(){
 	//========================================
 	//## Init data
 	bool init_status= Init();
-	//if(fIsFailure) return;
-	//progressPercentage+= stagePercentage;
-	//emit(statusProgress((int)(progressPercentage)));
-
+	
 	if(!init_status){
 	
 		msg = QString("--> POCA Image Reco: Init data failed!");
@@ -543,10 +541,7 @@ void POCAThreadObj::process(){
 	//========================================
 	//## Read data
 	bool read_status= ReadData();
-	//if(fIsFailure) return;
-	//progressPercentage+= stagePercentage;
-	//emit(statusProgress((int)(progressPercentage)));
-
+	
 	if(!read_status){
 		std::string errMsg("Data reading failed!");
 		ERROR_LOG(errMsg);
@@ -687,7 +682,6 @@ void POCAThreadObj::process(){
 		emit logSig(logMessage);
 		
 		return;
-
 	}
 	else{
 		std::string statusMsg("POCA algorithm save to file stage completed!");

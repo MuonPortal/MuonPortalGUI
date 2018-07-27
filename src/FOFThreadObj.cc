@@ -1,7 +1,7 @@
 // ******************************************************************************
 // * License and Disclaimer                                                     *
 // *                                                                            *
-// * Copyright 2018 Simone Riggi																			          *
+// * Copyright 2018 Marilena Bandieramonte, S. Riggi									          *
 // *																																	          *
 // * This file is part of MuonPortalGUI																          *
 // * MuonPortalGUI is free software: you can redistribute it and/or modify it   *
@@ -21,7 +21,7 @@
 * @class FOFThreadObj
 * @brief Friend-of-friends (FOF) algorithm processing thread
 *
-* @author S. Riggi
+* @author M. Bandieramonte, S. Riggi
 * @date 21/02/2012
 */
 
@@ -120,11 +120,7 @@ FOFThreadObj::~FOFThreadObj() {
 void FOFThreadObj::SetConfig(){
 
 	fVerbosity= ConfigParser::fClusteringVerbosity;
-	//fInputFileName= ConfigParser::fClusteringInputFileName;	
 	fWaitPOCAOutput= ConfigParser::fClusteringWaitPOCAOutput;	
-	//if(ConfigParser::fClusteringWaitPOCAOutput) fInputFileName= ConfigParser::fPOCAOutputFileName;	
-	//fOutputFileName= ConfigParser::fClusteringOutputFileName;
-	
 	fUseMaxNEvents= ConfigParser::fUseClusteringMaxNEvents;	
 	fMaxNEvents= ConfigParser::fClusteringMaxNEvents;	
 	fUseThetaCut= ConfigParser::fUseClusteringThetaCut;	
@@ -177,7 +173,7 @@ bool FOFThreadObj::Init(){
 	SetConfig();
 
 	//## Open data files
-	cout<<"FOFThreadObj::Init(): INFO: Open input data file "<<fInputFileName.c_str()<<" ..."<<endl;
+	INFO_LOG("Opening input data file "<<fInputFileName.c_str()<<" ...");
 	fInputFile= new TFile(fInputFileName.c_str(),"READ");	
 	if(!fInputFile || fInputFile->IsZombie() ){
 		QString errmsg = QString("--> FOF Image Reco: ERROR: Cannot open input file ");
@@ -244,7 +240,8 @@ bool FOFThreadObj::Init(){
 	fVisIVOPointOutputFileName= fCurrentDirectory + std::string("FOFPoint-VisIVO_") + fInputFileName_noPath;
 	fVisIVOPointOutputFileName_noPath= fVisIVOPointOutputFileName.substr( fVisIVOPointOutputFileName.find_last_of("\\/")+1 );
 	fVisIVOPointImageFilePrefix= std::string("VisIVOPoint_") + fVisIVOPointOutputFileName_noPath;
-	fVisIVOCommandName= fCurrentDirectory + std::string("/scripts/VisIVOPointImaging.sh ") + fVisIVOPointOutputFileName_noPath + TString(" ") + fCurrentDirectory + std::string("/figure/"); 	cout<<"fVisIVOCommandName="<<fVisIVOCommandName<<endl;
+	fVisIVOCommandName= fCurrentDirectory + std::string("/scripts/VisIVOPointImaging.sh ") + fVisIVOPointOutputFileName_noPath + TString(" ") + fCurrentDirectory + std::string("/figure/"); 	
+	DEBUG_LOG("VisIVO cmd="<<fVisIVOCommandName);
 
 	pointList.clear();
 	pointList.resize(0);
@@ -263,15 +260,16 @@ bool FOFThreadObj::Init(){
 
 bool FOFThreadObj::ReadData(){
 
-	cout<<"FOFThreadObj::ReadData(): INFO: Start reading data ..."<<endl;
+	DEBUG_LOG("Start reading data ...");
 
 	double POCAX, POCAY, POCAZ, ScatteringAngle, KinEnergy;
 	int EventId;
 
 	TTree* Data= (TTree*)fInputFile->Get("data");
 	if(!Data || Data->IsZombie()){
-		cerr<<"FOFThreadObj::ReadData(): ERROR: Cannot open data tree...exit!"<<endl;
-		QString errmsg = QString("--> FOF Image Reco: ERROR: Cannot open data tree...exit!");
+		std::string errMsg("Cannot open data tree...exit!");
+		ERROR_LOG(errMsg);
+		QString errmsg = QString(errMsg.c_str());
 		emit(statusMessage(errmsg));
 		emit error();
 
@@ -292,18 +290,15 @@ bool FOFThreadObj::ReadData(){
 	Data->SetBranchAddress("POCAZ",&POCAZ);
 	Data->SetBranchAddress("ScatteringAngle",&ScatteringAngle);
 	Data->SetBranchAddress("KinEnergy",&KinEnergy);
-	
-	
-	cout<<"FOFThreadObj::ReadData(): INFO: Reading data..."<<endl;
+		
+	INFO_LOG("Reading data ...");
 	
 	fNSelEvents= 0;
-
-	
 
 	for(int i=0;i<Data->GetEntries();i++){
 		Data->GetEntry(i);
 
-		if(i%100000==0) cout<<"--> "<<i<<"/"<<Data->GetEntries()<<" entries read..."<<endl;
+		if(i%100000==0) DEBUG_LOG("--> "<<i<<"/"<<Data->GetEntries()<<" entries read...");
 		
 		if(fUseThetaCut && (ScatteringAngle<fThetaMin || ScatteringAngle>fThetaMax) ) continue;
 		if(fUseEnergyCut && (KinEnergy<fEnergyMinCut || KinEnergy>fEnergyMaxCut) ) continue;
@@ -318,7 +313,7 @@ bool FOFThreadObj::ReadData(){
 		fNSelEvents++;
 	}//end loop entries
 
-	cout<<"--> NData="<<Data->GetEntries()<<"  fNSelEvents="<<fNSelEvents<<endl;
+	DEBUG_LOG("--> NData="<<Data->GetEntries()<<"  fNSelEvents="<<fNSelEvents);
 
 
 	struct dump h; //no. events
@@ -349,19 +344,18 @@ bool FOFThreadObj::ReadData(){
 
 bool FOFThreadObj::Run(){
 
-  cout<<"FOFThreadObj::Run(): Run begin..."<<endl;
+  INFO_LOG("Start FOF clustering run ...");
 	
 	//## Build KD tree
 	kdBuildTree(kd);
 
 	//## Perform the clustering
   fNClusterGroups = kdFoF(kd,fEps); //mb:fEps è un float non inizializzato se non dai l'opzione -e ---> linking lenght
-	
-  cout<<"--> "<<fNClusterGroups<<" clusters found!"<<endl;
+  INFO_LOG("#"<<fNClusterGroups<<" clusters found ...");
     
 	if (bVerbose) printf("Number of initial groups:%d\n",nGroup);  //mb:qui no
 	fNClusterGroups = kdTooSmall(kd,fMinNPts);
-  cout<<"--> "<<fNClusterGroups<<" clusters found after kdTooSmall!"<<endl;
+  INFO_LOG("#"<<fNClusterGroups<<" clusters found after kdTooSmall stage...");
   
 	//## Order clusters
 	kdOrder(kd);
@@ -479,8 +473,6 @@ bool FOFThreadObj::Run(){
 		}//end loop bins y
 	}//end loop bins z
 	
-	
-
 	//## Rescale map? Compute min & max POCA signal
 	if(fUseAverageSignal){
 		RecMap3D->Divide(NEventMap3D);
@@ -491,8 +483,7 @@ bool FOFThreadObj::Run(){
 
 	return true;
     
-
-}//close FOFThreadObj::Run()
+}//close Run()
 
 
 void FOFThreadObj::process(){
@@ -551,16 +542,16 @@ void FOFThreadObj::process(){
 	logMessage= makeLogMessage(fLogMessage);
 	emit logSig(logMessage);
 
-
+	//========================================
+	//==        INIT DATA STAGE
+	//========================================
 	//## Init
 	bool init_status= Init();
-	//if(fIsFailure) return;
-	//progressPercentage+= stagePercentage;
-	//emit(statusProgress((int)(progressPercentage)));
-
-	if(!init_status){
 	
-		msg = QString("--> FOF Image Reco: Init data failed!");
+	if(!init_status){
+		std::string errMsg("FOF clustering initialization stage failed!");
+		ERROR_LOG(errMsg);
+		msg = QString(errMsg.c_str());
 		emit(statusMessage(msg));
 
 		fLogMessage.status= eFailure;
@@ -571,11 +562,11 @@ void FOFThreadObj::process(){
 		emit logSig(logMessage);
 		
 		return;
-
-	}
+	}//close if
 	else{
-
-		msg = QString("--> FOF Image Reco: Init data ... done!");
+		std::string infoMsg("FOF clustering initialization stage completed!");
+		INFO_LOG(infoMsg);
+		msg = QString(infoMsg.c_str());
 		emit(statusMessage(msg));
 
 		progressPercentage+= stagePercentage;
@@ -589,16 +580,16 @@ void FOFThreadObj::process(){
 		emit logSig(logMessage);
 	}
 
-
+	//========================================
+	//==        READ DATA STAGE
+	//========================================
 	//## Read data
 	bool read_status= ReadData();
-	//if(fIsFailure) return;
-	//progressPercentage+= stagePercentage;
-	//emit(statusProgress((int)(progressPercentage)));
-
-	if(!read_status){
 	
-		msg = QString("--> FOF Image Reco: Read data failed!");
+	if(!read_status){
+		std::string errMsg("FOF clustering data reading stage failed!");
+		ERROR_LOG(errMsg);
+		msg = QString(errMsg.c_str());
 		emit(statusMessage(msg));
 
 		fLogMessage.status= eFailure;
@@ -609,11 +600,11 @@ void FOFThreadObj::process(){
 		emit logSig(logMessage);
 		
 		return;
-
-	}
+	}//close if
 	else{
-
-		msg = QString("--> FOF Image Reco: Read data ... done!");
+		std::string infoMsg("FOF clustering data reading stage completed!");
+		INFO_LOG(infoMsg);
+		msg = QString(infoMsg.c_str());
 		emit(statusMessage(msg));
 
 		progressPercentage+= stagePercentage;
@@ -627,17 +618,16 @@ void FOFThreadObj::process(){
 		emit logSig(logMessage);
 	}
 
-
-
+	//========================================
+	//==        RUN STAGE
+	//========================================
 	//## Clustering calculation
 	bool run_status= Run();
-	//if(fIsFailure) return;
-	//progressPercentage+= stagePercentage;
-	//emit(statusProgress((int)(progressPercentage)));
-
-	if(!run_status){
 	
-		msg = QString("--> FOF Image Reco: Run algo stage failed!");
+	if(!run_status){
+		std::string errMsg("FOF clustering run stage failed!");
+		ERROR_LOG(errMsg);
+		msg = QString(errMsg.c_str());
 		emit(statusMessage(msg));
 
 		fLogMessage.status= eFailure;
@@ -648,11 +638,11 @@ void FOFThreadObj::process(){
 		emit logSig(logMessage);
 		
 		return;
-
-	}
+	}//close if
 	else{
-
-		msg = QString("--> FOF Image Reco: Run algo stage ... done!");
+		std::string infoMsg("FOF clustering run stage completed!");
+		INFO_LOG(infoMsg);
+		msg = QString(infoMsg.c_str());
 		emit(statusMessage(msg));
 
 		progressPercentage+= stagePercentage;
@@ -667,17 +657,16 @@ void FOFThreadObj::process(){
 	}
 
 
-
+	//========================================
+	//==        DRAW STAGE
+	//========================================
 	//## Draw
 	bool draw_status= Draw();	
-	//if(fIsFailure) return;
-
-	//progressPercentage+= stagePercentage;
-	//emit(statusProgress(max((int)(progressPercentage),100)));
 	
 	if(!draw_status){
-	
-		msg = QString("--> FOF Image Reco: Draw stage failed!");
+		std::string errMsg("FOF clustering draw stage failed!");
+		ERROR_LOG(errMsg);
+		msg = QString(errMsg.c_str());
 		emit(statusMessage(msg));
 
 		fLogMessage.status= eFailure;
@@ -688,11 +677,11 @@ void FOFThreadObj::process(){
 		emit logSig(logMessage);
 		
 		return;
-
-	}
+	}//close if
 	else{
-
-		msg = QString("--> FOF Image Reco: Draw stage ... done!");
+		std::string infoMsg("FOF clustering draw stage completed!");
+		INFO_LOG(infoMsg);
+		msg = QString(infoMsg.c_str());
 		emit(statusMessage(msg));
 		
 		progressPercentage+= stagePercentage;
@@ -706,17 +695,16 @@ void FOFThreadObj::process(){
 		emit logSig(logMessage);
 	}
 
-
+	//========================================
+	//==        SAVE TO FILE STAGE
+	//========================================
 	//## Save
 	bool save_status= Save();
-	//if(fIsFailure) return;
 	
-	//progressPercentage+= stagePercentage;
-	//emit(statusProgress(max((int)(progressPercentage),100)));
-
 	if(!save_status){
-	
-		msg = QString("--> FOF Image Reco: Save stage failed!");
+		std::string errMsg("FOF clustering save to file stage failed!");
+		ERROR_LOG(errMsg);
+		msg = QString(errMsg.c_str());
 		emit(statusMessage(msg));
 
 		fLogMessage.status= eFailure;
@@ -727,11 +715,11 @@ void FOFThreadObj::process(){
 		emit logSig(logMessage);
 		
 		return;
-
-	}
+	}//close if
 	else{
-
-		msg = QString("--> FOF Image Reco: Save stage ... done!");
+		std::string infoMsg("FOF clustering save to file stage completed!");
+		INFO_LOG(infoMsg);
+		msg = QString(infoMsg.c_str());
 		emit(statusMessage(msg));
 		
 		progressPercentage+= stagePercentage;
@@ -745,7 +733,7 @@ void FOFThreadObj::process(){
 		emit logSig(logMessage);
 	}
 
-
+	INFO_LOG("FOF clustering terminated with success!");
 	emit finished();	
 	msg = QString("--> FOF Image Reco: Terminated with success!");
 	emit(statusMessage(msg));	
@@ -890,7 +878,7 @@ bool FOFThreadObj::sender(QString message){
 	data.append(message);
 	
 	//## Create the tcp socket for communication
-	cout<<"FOFThreadObj::sender(): INFO: Create a tcp client communicating with host "<<fGuiHostName<<" on port "<<fGuiPort<<endl;
+	INFO_LOG("Creating a tcp client communicating with host "<<fGuiHostName<<" on port "<<fGuiPort<<" ...");
 	socket= new QTcpSocket(this);
 	connect(socket, SIGNAL(connected()),this, SLOT(connected()));
 	socket->connectToHost(QString::fromStdString(fGuiHostName),fGuiPort);	
@@ -898,10 +886,9 @@ bool FOFThreadObj::sender(QString message){
 
 	//## Send message	
 	if( socket->waitForConnected() ) {
-		cout<<"FOFThreadObj::sender(): INFO: Send this message via socket: "<<qPrintable(message)<<endl;
+		DEBUG_LOG("Send this message via socket: "<<qPrintable(message));
   	socket->write(data);
-		cout<<"FOFThreadObj::sender(): Written to socket..."<<endl;
-
+		DEBUG_LOG("Message written to socket...");
 		socket->flush();
 		socket->waitForBytesWritten(3000);
   }
@@ -910,7 +897,7 @@ bool FOFThreadObj::sender(QString message){
 	
 	return status;
 
-}//close FOFThreadObj::sender()
+}//close sender()
 
 
 void FOFThreadObj::kdTime(KD kd,int *puSecond,int *puMicro){

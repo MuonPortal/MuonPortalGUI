@@ -1,7 +1,7 @@
 // ******************************************************************************
 // * License and Disclaimer                                                     *
 // *                                                                            *
-// * Copyright 2018 Simone Riggi																			          *
+// * Copyright 2018 Marilena Bandieramonte, S. Riggi									          *
 // *																																	          *
 // * This file is part of MuonPortalGUI																          *
 // * MuonPortalGUI is free software: you can redistribute it and/or modify it   *
@@ -21,7 +21,7 @@
 * @class FOFThreadObj
 * @brief Friend-of-friends (FOF) algorithm processing thread
 *
-* @author S. Riggi
+* @author M. Bandieramonte, S. Riggi
 * @date 21/02/2012
 */
 #ifndef FOF_THREAD_OBJ_H

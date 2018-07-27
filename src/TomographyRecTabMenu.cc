@@ -32,6 +32,11 @@
 #include <EMTomographyRecoThreadObj.h>
 #include <FOFThreadObj.h>
 #include <ACFAnalysisThreadObj.h>
+#include <POCAThreadObj.h>
+#include <POCAViewerThreadObj.h>
+#include <EMLLViewerThreadObj.h>
+#include <ClusteringViewerThreadObj.h>
+#include <ACFViewerThreadObj.h>
 #include <QtGui>
 
 #include <QUdpSocket>
@@ -1794,7 +1799,7 @@ void TomographyRecTabMenu::BufferizeSocketData(){
 
 void TomographyRecTabMenu::sendAlarmMessage(QString message){
 
-	cout<<"TomographyRecTabMenu::sendAlarmMessage(): INFO: message= "<<qPrintable(message)<<endl;
+	DEBUG_LOG("message= "<<qPrintable(message));
   client->write((message.toStdString()).c_str(), 13);
 
 }//close TomographyRecTabMenu::sendAlarmMessage()
@@ -1803,9 +1808,8 @@ void TomographyRecTabMenu::sendAlarmMessage(QString message){
 
 void TomographyRecTabMenu::logHandler(QString data){
 
-	cout<<"TomographyRecTabMenu::logHandler(): INFO: Start logging actions..."<<endl;
+	INFO_LOG("Start logging actions...");
 
-	
 	//## Parse JSON message
 	QJson::Parser parser;
 	bool ok;
@@ -1814,7 +1818,7 @@ void TomographyRecTabMenu::logHandler(QString data){
 	QVariantList result = parser.parse(arraydata, &ok).toList();
 	
 	if(!ok){
-		cerr<<"TomographyRecTabMenu::logHandler(). ERROR: Cannot parse JSON string message...exit!"<<endl;
+		ERROR_LOG("Cannot parse JSON string message...exit!");
 		return;
 	}
 	
@@ -1862,14 +1866,14 @@ void TomographyRecTabMenu::logHandler(QString data){
 
 	//## Check current GUI key with job gui key
 	if(guiKey.toStdString() != Gui::GUI_KEY){
-		cout<<"TomographyRecTabMenu::logHandler(): WARNING: Task gui key is different from current gui key...do not update GUI!"<<endl;
+		WARN_LOG("Task gui key is different from current gui key...do not update GUI!");
 		return;	
 	}
 
 
 	//## Check current scan id
 	if(nscan<1 || nscan>MAXNSCANS){
-		cerr<<"TomographyRecTabMenu::logHandler(): ERROR: Current scan index is not in range [0,3]...exit!"<<endl;
+		ERROR_LOG("Current scan index is not in range [0,3]...exit!");
 		return;
 	}
 
@@ -1877,14 +1881,12 @@ void TomographyRecTabMenu::logHandler(QString data){
 	//########  DOWNLOAD TASK ###############
 	if(task=="DOWNLOADER"){
 
-		
 		if(status==DownloaderThreadObj::eRunning){//running actions
 			imageLabelList_fileStatus[nscan-1]->setMovie(movieList_fileStatus_Red[nscan-1]);
 			
 			if( movieList_fileStatus_Red[nscan-1]->state() != QMovie::Running ){
 				movieList_fileStatus_Red[nscan-1]->start();
 			}
-
 		}
 		else if(status==DownloaderThreadObj::eFinished){//finish actions
 			
@@ -1955,21 +1957,21 @@ void TomographyRecTabMenu::logHandler(QString data){
 			std::string viewerInputFileName= outputFileName.toStdString();
 
 			if(fRunMode==eAuto || fRunMode==eAutoBatch){//remote copy
-				std::string scpProcExe= Form("scp %s@%s:%s",Gui::SEI_USERNAME.c_str(),Gui::SEI_HOSTNAME.c_str(),(outputFileName.toStdString()).c_str(),Gui::GUI_DATA_DIR.c_str());
+				std::stringstream ss;
+				ss<<"scp "<<Gui::SEI_USERNAME<<"@"<<Gui::SEI_HOSTNAME<<":"<<outputFileName.toStdString()<<" "<<Gui::GUI_DATA_DIR;
+				std::string scpProcExe= ss.str();
+				//std::string scpProcExe= Form("scp %s@%s:%s",Gui::SEI_USERNAME.c_str(),Gui::SEI_HOSTNAME.c_str(),(outputFileName.toStdString()).c_str(),Gui::GUI_DATA_DIR.c_str());
 				Utilities::ExecSystemCommand(scpProcExe.c_str());
-				cout<<"TomographyRecTabMenu::logHandler(): INFO: scpProcExe: "<<scpProcExe<<endl;
+				INFO_LOG("Downloading locally POCA output reco file (cmd: "<<scpProcExe<<")");
 
 				viewerInputFileName= Gui::GUI_DATA_DIR + std::string("/") + Utilities::GetBaseFileName(outputFileName.toStdString());			
 			}
 			
-
 			//Set input filename for 3D viewer
 			fPOCAOutputFileNameList[nscan-1]= viewerInputFileName;
-			
-			
-		}
+
+		}//close if
 		else if(status==POCAThreadObj::eFailure){
-			
 			imageLabelList_POCARecoStatus[nscan-1]->setMovie(movieList_POCARecoStatus_Red[nscan-1]);
 			movieList_POCARecoStatus_Red[nscan-1]->start();
 			movieList_POCARecoStatus_Red[nscan-1]->stop();
@@ -2015,9 +2017,12 @@ void TomographyRecTabMenu::logHandler(QString data){
 			std::string viewerInputFileName= outputFileName.toStdString();
 
 			if(fRunMode==eAuto || fRunMode==eAutoBatch){//remote copy
-				std::string scpProcExe= Form("scp %s@%s:%s",Gui::SEI_USERNAME.c_str(),Gui::SEI_HOSTNAME.c_str(),(outputFileName.toStdString()).c_str(),Gui::GUI_DATA_DIR.c_str());
+				std::stringstream ss;
+				ss<<"scp "<<Gui::SEI_USERNAME<<"@"<<Gui::SEI_HOSTNAME<<":"<<outputFileName.toStdString()<<" "<<Gui::GUI_DATA_DIR;
+				std::string scpProcExe= ss.str();
+				//std::string scpProcExe= Form("scp %s@%s:%s",Gui::SEI_USERNAME.c_str(),Gui::SEI_HOSTNAME.c_str(),(outputFileName.toStdString()).c_str(),Gui::GUI_DATA_DIR.c_str());
 				Utilities::ExecSystemCommand(scpProcExe.c_str());
-				cout<<"TomographyRecTabMenu::logHandler(): INFO: scpProcExe: "<<scpProcExe<<endl;
+				INFO_LOG("Downloading locally FOF output reco file (cmd: "<<scpProcExe<<")");
 
 				viewerInputFileName= Gui::GUI_DATA_DIR + std::string("/") + Utilities::GetBaseFileName(outputFileName.toStdString());			
 			}
@@ -2072,9 +2077,12 @@ void TomographyRecTabMenu::logHandler(QString data){
 			std::string viewerInputFileName= outputFileName.toStdString();
 
 			if(fRunMode==eAuto || fRunMode==eAutoBatch){//remote copy
-				std::string scpProcExe= Form("scp %s@%s:%s",Gui::SEI_USERNAME.c_str(),Gui::SEI_HOSTNAME.c_str(),(outputFileName.toStdString()).c_str(),Gui::GUI_DATA_DIR.c_str());
+				std::stringstream ss;
+				ss<<"scp "<<Gui::SEI_USERNAME<<"@"<<Gui::SEI_HOSTNAME<<":"<<outputFileName.toStdString()<<" "<<Gui::GUI_DATA_DIR;
+				std::string scpProcExe= ss.str();
+				//std::string scpProcExe= Form("scp %s@%s:%s",Gui::SEI_USERNAME.c_str(),Gui::SEI_HOSTNAME.c_str(),(outputFileName.toStdString()).c_str(),Gui::GUI_DATA_DIR.c_str());
 				Utilities::ExecSystemCommand(scpProcExe.c_str());
-				cout<<"TomographyRecTabMenu::logHandler(): INFO: scpProcExe: "<<scpProcExe<<endl;
+				INFO_LOG("Downloading locally ACF output reco file (cmd: "<<scpProcExe<<")");
 
 				viewerInputFileName= Gui::GUI_DATA_DIR + std::string("/") + Utilities::GetBaseFileName(outputFileName.toStdString());			
 			}
@@ -2127,9 +2135,12 @@ void TomographyRecTabMenu::logHandler(QString data){
 			std::string viewerInputFileName= outputFileName.toStdString();
 
 			if(fRunMode==eAuto || fRunMode==eAutoBatch){//remote copy
-				std::string scpProcExe= Form("scp %s@%s:%s",Gui::SEI_USERNAME.c_str(),Gui::SEI_HOSTNAME.c_str(),(outputFileName.toStdString()).c_str(),Gui::GUI_DATA_DIR.c_str());
+				std::stringstream ss;
+				ss<<"scp "<<Gui::SEI_USERNAME<<"@"<<Gui::SEI_HOSTNAME<<":"<<outputFileName.toStdString()<<" "<<Gui::GUI_DATA_DIR;
+				std::string scpProcExe= ss.str();
+				//std::string scpProcExe= Form("scp %s@%s:%s",Gui::SEI_USERNAME.c_str(),Gui::SEI_HOSTNAME.c_str(),(outputFileName.toStdString()).c_str(),Gui::GUI_DATA_DIR.c_str());
 				Utilities::ExecSystemCommand(scpProcExe.c_str());
-				cout<<"TomographyRecTabMenu::logHandler(): INFO: scpProcExe: "<<scpProcExe<<endl;
+				INFO_LOG("Downloading locally EM-ML output reco file (cmd: "<<scpProcExe<<")");
 
 				viewerInputFileName= Gui::GUI_DATA_DIR + std::string("/") + Utilities::GetBaseFileName(outputFileName.toStdString());			
 			}
@@ -2161,11 +2172,10 @@ void TomographyRecTabMenu::logHandler(QString data){
 
 
 
-void TomographyRecTabMenu::alarmHandler(QString data){
+void TomographyRecTabMenu::alarmHandler(QString data)
+{
+	INFO_LOG("Start logging actions...");
 
-	cout<<"TomographyRecTabMenu::alarmHandler(): INFO: Start logging actions..."<<endl;
-
-	
 	//## Parse JSON message
 	QJson::Parser parser;
 	bool ok;
@@ -2174,7 +2184,7 @@ void TomographyRecTabMenu::alarmHandler(QString data){
 	QVariantList result = parser.parse(arraydata, &ok).toList();
 	
 	if(!ok){
-		cerr<<"TomographyRecTabMenu::alarmHandler(). ERROR: Cannot parse JSON string message...exit!"<<endl;
+		ERROR_LOG("Cannot parse JSON string message...exit!");
 		return;
 	}
 	
@@ -2220,19 +2230,16 @@ void TomographyRecTabMenu::alarmHandler(QString data){
 
 	//## Check current GUI key with job gui key
 	if(guiKey.toStdString() != Gui::GUI_KEY){
-		cout<<"TomographyRecTabMenu::alarmHandler(): WARNING: Task gui key is different from current gui key...do not update GUI!"<<endl;
+		WARN_LOG("Task gui key is different from current gui key ...do not update GUI!");
 		return;	
 	}
 
-
 	//## Check current scan id
 	if(nscan<1 || nscan>MAXNSCANS){
-		cerr<<"TomographyRecTabMenu::alarmHandler(): ERROR: Current scan index is not in range [0,3]...exit!"<<endl;
+		ERROR_LOG("Current scan index is not in range [0,3]...exit!");
 		return;
 	}
 
-
-	
 	//########  EM ML TASK ###############
 	if(task=="EMML"){
 
@@ -2308,13 +2315,11 @@ void TomographyRecTabMenu::alarmHandler(QString data){
 }//close TomographyRecTabMenu::alarmHandler()
 
 
-//void TomographyRecTabMenu::ProcessSocketData(){
-void TomographyRecTabMenu::ProcessSocketData(QByteArray data){
-
-	
+void TomographyRecTabMenu::ProcessSocketData(QByteArray data)
+{	
 	//## Skip reading and processing socket data if in manual mode
 	if(fRunExecMode==eLocalInteractive) {	
-		cout<<"TomographyRecTabMenu::ProcessSocketData(): INFO: Skip socket processing as running in local interactive mode..."<<endl;
+		INFO_LOG("Skip socket processing as running in local interactive mode...");
 		return;
 	}
 
@@ -2325,7 +2330,7 @@ void TomographyRecTabMenu::ProcessSocketData(QByteArray data){
 	
 
 	if(!ok){
-		cerr<<"TomographyRecTabMenu::ProcessSocketData(). ERROR: Cannot parse JSON string message...exit!"<<endl;
+		ERROR_LOG("Cannot parse JSON string message...exit!");
 		return;
 	}
 	
@@ -2373,45 +2378,41 @@ void TomographyRecTabMenu::ProcessSocketData(QByteArray data){
 
 		 
 	
-	cout<<"TomographyRecTabMenu::ProcessSocketData(): INFO: command="<<qPrintable(command)<<endl;
-	cout<<"TomographyRecTabMenu::ProcessSocketData(): INFO: task="<<qPrintable(task)<<endl;
-	cout<<"TomographyRecTabMenu::ProcessSocketData(): INFO: filename="<<qPrintable(filename)<<endl;
-	cout<<"TomographyRecTabMenu::ProcessSocketData(): INFO: inputFileName="<<qPrintable(inputFileName)<<endl;
-	cout<<"TomographyRecTabMenu::ProcessSocketData(): INFO: outputFileName="<<qPrintable(outputFileName)<<endl;
-	cout<<"TomographyRecTabMenu::ProcessSocketData(): INFO: path="<<qPrintable(path)<<endl;
-	cout<<"TomographyRecTabMenu::ProcessSocketData(): INFO: host="<<qPrintable(host)<<endl;
-	cout<<"TomographyRecTabMenu::ProcessSocketData(): INFO: user="<<qPrintable(user)<<endl;
-	cout<<"TomographyRecTabMenu::ProcessSocketData(): INFO: id="<<qPrintable(id)<<endl;
-	cout<<"TomographyRecTabMenu::ProcessSocketData(): INFO: nscan="<<nscan<<endl;
-	cout<<"TomographyRecTabMenu::ProcessSocketData(): INFO: status="<<status<<endl;
-	cout<<"TomographyRecTabMenu::ProcessSocketData(): INFO: logMessage="<<qPrintable(logMessage)<<endl;	
-	cout<<"TomographyRecTabMenu::ProcessSocketData(): INFO: progress="<<progress<<endl;	
-	cout<<"TomographyRecTabMenu::ProcessSocketData(): INFO: timeStamp="<<time<<endl;
-	cout<<"TomographyRecTabMenu::ProcessSocketData(): INFO: guiKey="<<qPrintable(guikey)<<endl;
-	cout<<"TomographyRecTabMenu::ProcessSocketData(): INFO: guiHostName="<<qPrintable(guihostname)<<endl;
-	cout<<"TomographyRecTabMenu::ProcessSocketData(): INFO: guiPort="<<guiport<<endl;
-	cout<<"TomographyRecTabMenu::ProcessSocketData(): INFO: jobdir="<<qPrintable(jobdir)<<endl;
-	
-	
+	DEBUG_LOG("command="<<qPrintable(command));
+	DEBUG_LOG("task="<<qPrintable(task));
+	DEBUG_LOG("filename="<<qPrintable(filename));
+	DEBUG_LOG("inputFileName="<<qPrintable(inputFileName));
+	DEBUG_LOG("outputFileName="<<qPrintable(outputFileName));
+	DEBUG_LOG("path="<<qPrintable(path));
+	DEBUG_LOG("host="<<qPrintable(host));
+	DEBUG_LOG("user="<<qPrintable(user));
+	DEBUG_LOG("id="<<qPrintable(id));
+	DEBUG_LOG("nscan="<<nscan);
+	DEBUG_LOG("status="<<status);
+	DEBUG_LOG("logMessage="<<qPrintable(logMessage));	
+	DEBUG_LOG("progress="<<progress);
+	DEBUG_LOG("timeStamp="<<time);
+	DEBUG_LOG("guiKey="<<qPrintable(guikey));
+	DEBUG_LOG("guiHostName="<<qPrintable(guihostname));
+	DEBUG_LOG("guiPort="<<guiport);
+	DEBUG_LOG("jobdir="<<qPrintable(jobdir));
+		
 	if(nscan<1 || nscan>MAXNSCANS){
-		cerr<<"TomographyRecTabMenu::ProcessSocketData(): ERROR: Current scan index is not in range [1,3]...exit!"<<endl;
-		//exit(1);	
+		ERROR_LOG("Current scan index is not in range [1,3]...exit!");
 		return;
 	}
-
-	
 
 	//## Skip further processing if receiving a LOG message in auto mode
 	//## since the gui update is automatically done via QT signal-slot 	
 	if(command=="LOG" && fRunExecMode==eLocalInteractive){
-		cout<<"TomographyRecTabMenu::ProcessSocketData(). INFO: Skip further processing as received a LOG command in interactive mode..."<<endl;
+		INFO_LOG("Skip further processing as received a LOG command in interactive mode...");
 		return;
 	}
 
 
 	//## Start tasks when receiving a READY command
 	if(command=="READY"){
-		cout<<"TomographyRecTabMenu::ProcessSocketData(): INFO: Received a READY message from remote host..."<<endl;
+		INFO_LOG("Received a READY message from remote host...");
 
 		//Form download message
 		QVariantList jsonMessage;
@@ -2456,13 +2457,13 @@ void TomographyRecTabMenu::ProcessSocketData(QByteArray data){
 		bool ok;
 		QByteArray msg= serializer.serialize(jsonMessage,&ok);
 
-		cout<<"TomographyRecTabMenu::ProcessSocketData(): INFO: Download config message: "<<qPrintable(QString(msg))<<endl;
+		INFO_LOG("Download config message: "<<qPrintable(QString(msg)));
 		
 		if(ok){
 			emit downloadStartSig(QString(msg));
 		}
 		else{
-			cerr<<"TomographyRecTabMenu::ProcessSocketData(): ERROR: Cannot serialize json message to be sent to download task...exit!"<<endl;
+			ERROR_LOG("Cannot serialize json message to be sent to download task...exit!");
 			return;
 		}
 
@@ -2480,18 +2481,15 @@ void TomographyRecTabMenu::ProcessSocketData(QByteArray data){
 	}//close if ALARM
 
 	else{
-		cerr<<"TomographyRecTabMenu::ProcessSocketData(): ERROR: Unknown command received...exit!"<<endl;
+		ERROR_LOG("Unknown command received...exit!");
 		return;
 	}
 
-}//close TomographyRecTabMenu::ProcessSocketData()
-
-
+}//close ProcessSocketData()
 
 
 void TomographyRecTabMenu::SetBusyDownloadStatus(){
 
-	cout<<"TomographyRecTabMenu::SetBusyDownloadStatus()"<<endl;
 	imageLabelList_fileStatus[fCurrentScanIndex]->setMovie(movieList_fileStatus_Red[fCurrentScanIndex]);
 	movieList_fileStatus_Red[fCurrentScanIndex]->start();
 	
@@ -2553,7 +2551,6 @@ void TomographyRecTabMenu::SetBusyClusteringRecoStatus(){
 
 void TomographyRecTabMenu::SetFailureDownloadStatus(){
 
-	cout<<"TomographyRecTabMenu::SetFailureDownloadStatus()"<<endl;
 	imageLabelList_fileStatus[fCurrentScanIndex]->setMovie(movieList_fileStatus_Red[fCurrentScanIndex]);
 	movieList_fileStatus_Red[fCurrentScanIndex]->start();
 	movieList_fileStatus_Red[fCurrentScanIndex]->stop();
@@ -2570,7 +2567,6 @@ void TomographyRecTabMenu::SetFailurePOCARecoStatus(){
 
 void TomographyRecTabMenu::SetFailureEMTomographyRecoStatus(){
 
-	cout<<"TomographyRecTabMenu::SetFailureEMTomographyRecoStatus()"<<endl;
 	imageLabelList_LLRecoStatus[fCurrentScanIndex]->setMovie(movieList_LLRecoStatus_Red[fCurrentScanIndex]);
 	movieList_LLRecoStatus_Red[fCurrentScanIndex]->start();
 	movieList_LLRecoStatus_Red[fCurrentScanIndex]->stop();
@@ -2598,7 +2594,7 @@ void TomographyRecTabMenu::SetFailureClusteringRecoStatus(){
 
 void TomographyRecTabMenu::SetInitImageStatus(){
 
-	cout<<"TomographyRecTabMenu::SetInitImageStatus()"<<endl;
+	
 	for(int i=0;i<MAXNSCANS;i++){
 		//imageLabelList_fileStatus[i]->setMovie(movieList_fileStatus_Red[i]);
 		//movieList_fileStatus_Red[i]->start();
